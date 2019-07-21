@@ -3,7 +3,47 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29102.190
 MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ruzzie.Common.Types", "Ruzzie.Common.Types\Ruzzie.Common.Types.csproj", "{A51F3E98-6DA4-4612-9298-ABF865087D59}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Ruzzie.Common.Types.UnitTests.Shared", "Ruzzie.Common.Types.UnitTests.Shared\Ruzzie.Common.Types.UnitTests.Shared.shproj", "{1ABF7A34-BB2D-497C-84FD-9D5C1BDEB6F0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ruzzie.Common.Types.UnitTests.NET472CS7", "Ruzzie.Common.Types.UnitTests.NET472CS7\Ruzzie.Common.Types.UnitTests.NET472CS7.csproj", "{74B69731-EEE9-4014-A1AE-F42CB7C3336E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ruzzie.Common.Types.UnitTests.NET472CS8", "Ruzzie.Common.Types.UnitTests.NET472CS8\Ruzzie.Common.Types.UnitTests.NET472CS8.csproj", "{B175FDEA-A931-4C92-B04E-C5E02E6EA02C}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Ruzzie.Common.Types.Benchmarks.Shared", "Ruzzie.Common.Types.Benchmarks.Shared\Ruzzie.Common.Types.Benchmarks.Shared.shproj", "{4364D825-E4BC-401D-980B-29691B9C65D8}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ruzzie.Common.Types.Benchmarks", "Ruzzie.Common.Types.Benchmarks\Ruzzie.Common.Types.Benchmarks.csproj", "{FEB14946-C770-45C8-BAD0-479DB37757C1}"
+EndProject
 Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		Ruzzie.Common.Types.UnitTests.Shared\Ruzzie.Common.Types.UnitTests.Shared.projitems*{1abf7a34-bb2d-497c-84fd-9d5c1bdeb6f0}*SharedItemsImports = 13
+		Ruzzie.Common.Types.Benchmarks.Shared\Ruzzie.Common.Types.Benchmarks.Shared.projitems*{4364d825-e4bc-401d-980b-29691b9c65d8}*SharedItemsImports = 13
+		Ruzzie.Common.Types.UnitTests.Shared\Ruzzie.Common.Types.UnitTests.Shared.projitems*{74b69731-eee9-4014-a1ae-f42cb7c3336e}*SharedItemsImports = 4
+		Ruzzie.Common.Types.UnitTests.Shared\Ruzzie.Common.Types.UnitTests.Shared.projitems*{b175fdea-a931-4c92-b04e-c5e02e6ea02c}*SharedItemsImports = 4
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A51F3E98-6DA4-4612-9298-ABF865087D59}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A51F3E98-6DA4-4612-9298-ABF865087D59}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A51F3E98-6DA4-4612-9298-ABF865087D59}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A51F3E98-6DA4-4612-9298-ABF865087D59}.Release|Any CPU.Build.0 = Release|Any CPU
+		{74B69731-EEE9-4014-A1AE-F42CB7C3336E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{74B69731-EEE9-4014-A1AE-F42CB7C3336E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{74B69731-EEE9-4014-A1AE-F42CB7C3336E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{74B69731-EEE9-4014-A1AE-F42CB7C3336E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B175FDEA-A931-4C92-B04E-C5E02E6EA02C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B175FDEA-A931-4C92-B04E-C5E02E6EA02C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B175FDEA-A931-4C92-B04E-C5E02E6EA02C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B175FDEA-A931-4C92-B04E-C5E02E6EA02C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FEB14946-C770-45C8-BAD0-479DB37757C1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FEB14946-C770-45C8-BAD0-479DB37757C1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FEB14946-C770-45C8-BAD0-479DB37757C1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FEB14946-C770-45C8-BAD0-479DB37757C1}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection

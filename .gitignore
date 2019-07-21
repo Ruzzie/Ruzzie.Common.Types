@@ -183,3 +183,6 @@ UpgradeLog*.htm
 FakesAssemblies/
 *.DotSettings
 nuget.exe
+src/Ruzzie.Common.Types/.vs/
+src/Ruzzie.Common.Types/packages/
+src/Ruzzie.Common.Types/Ruzzie.Common.Types.Benchmarks/BenchmarkDotNet.Artifacts/
