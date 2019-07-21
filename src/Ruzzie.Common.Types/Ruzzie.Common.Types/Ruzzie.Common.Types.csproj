@@ -12,6 +12,9 @@
     <Company>D Crafting</Company>
     <Copyright>Copyright © Dorus Verhoeckx 2019</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <RepositoryUrl>https://github.com/Ruzzie/Ruzzie.Common.Types</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/Ruzzie/Ruzzie.Common.Types</PackageProjectUrl>
+    <RepositoryType>git</RepositoryType>
   </PropertyGroup>
 
 </Project>
