@@ -3,10 +3,14 @@ using System.Collections.Generic;
 
 namespace Ruzzie.Common.Types
 {
+    /// <summary>
+    /// Basic interface to indicate that an Either type is a reference type.
+    /// </summary>
+    /// <typeparam name="TLeft">The type of the left.</typeparam>
+    /// <typeparam name="TRight">The type of the right.</typeparam>
+    /// <seealso cref="Ruzzie.Common.Types.IEither{TLeft, TRight}" />
     public interface IEitherReferenceType<out TLeft, out TRight> : IEither<TLeft, TRight>
     {
-        //T Match<T>(Func<TLeft, T> onLeft, Func<TRight, T> onRight);
-
         IEitherReferenceType<TLeftResult, TRightResult> SelectBoth<TLeftResult, TRightResult>(
             Func<TLeft, TLeftResult> selectLeft,
             Func<TRight, TRightResult> selectRight);
@@ -37,7 +41,9 @@ namespace Ruzzie.Common.Types
 
         public bool Equals(Left<TLeft, TRight> other)
         {
+#pragma warning disable IDE0041 // Use 'is null' check
             if (ReferenceEquals(null, other))
+
             {
                 return false;
             }
@@ -46,6 +52,7 @@ namespace Ruzzie.Common.Types
             {
                 return true;
             }
+#pragma warning restore IDE0041 // Use 'is null' check
 
             return EqualityComparer<TLeft>.Default.Equals(_value, other._value);
         }
@@ -92,6 +99,7 @@ namespace Ruzzie.Common.Types
 
         public bool Equals(Right<TLeft, TRight> other)
         {
+#pragma warning disable IDE0041 // Use 'is null' check
             if (ReferenceEquals(null, other))
             {
                 return false;
@@ -101,7 +109,7 @@ namespace Ruzzie.Common.Types
             {
                 return true;
             }
-
+#pragma warning restore IDE0041 // Use 'is null' check
             return EqualityComparer<TRight>.Default.Equals(_value, other._value);
         }
 
