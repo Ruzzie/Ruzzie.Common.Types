@@ -58,6 +58,11 @@ namespace Ruzzie.Common.Types
             return _variant == OptionVariant.None ? onNone() : onSome(_value);
         }
 
+        public T Match<T>(Func<TValue, T> onSome, Func<T> onNone)
+        {
+            return _variant == OptionVariant.None ? onNone() : onSome(_value);
+        }
+
         public IOption<TResult> Select<TResult>(Func<TValue, TResult> selector)
         {
             if (IsSome())
@@ -66,6 +71,18 @@ namespace Ruzzie.Common.Types
             }
 
             return Option<TResult>.None;
+        }
+
+        ///Returns the contained value or a default.
+        public TValue UnwrapOr(TValue @default)
+        {
+            return IsSome() ? _value : @default;
+        }
+
+        ///Returns the contained value or computes it from a closure.
+        public TValue UnwrapOrElse(Func<TValue> orElse)
+        {
+            return IsSome() ? _value : orElse();
         }
 
         public bool IsNone()

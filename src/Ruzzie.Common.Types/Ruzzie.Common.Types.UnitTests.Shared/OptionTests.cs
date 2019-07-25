@@ -40,6 +40,21 @@ namespace Ruzzie.Common.Types.UnitTests
         }
 
         [Test]
+        public void UnwrapOrExample()
+        {
+            Assert.AreEqual(Some("car").UnwrapOr("bike"), "car");
+            Assert.AreEqual(None<string>().UnwrapOr("bike"), "bike");
+        }
+
+        [Test]
+        public void UnwrapOrElseExample()
+        {
+            var k = 10;
+            Assert.AreEqual(Some(4).UnwrapOrElse(() => 2 * k), 4);
+            Assert.AreEqual(None<int>().UnwrapOrElse(() => 2 * k), 20);
+        }
+
+        [Test]
         public void NoneEqualsNone()
         {
             var optionA = Option<string>.None;

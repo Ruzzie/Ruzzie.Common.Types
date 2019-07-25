@@ -222,6 +222,11 @@ namespace Ruzzie.Common.Types
             return IsOk ? onOk(_value) : onErr(ErrValue);
         }
 
+        public TU Match<TU>(Func<T, TU> onOk, Func<TError, TU> onErr)
+        {
+            return IsOk ? onOk(_value) : onErr(ErrValue);
+        }
+
         public Result<TF, TU> Select<TF, TU>(Func<TError, TF> selectErr, Func<T, TU> selectOk)
         {
             return IsOk
