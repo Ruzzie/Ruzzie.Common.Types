@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using FluentAssertions;
 using NUnit.Framework;
-using static Ruzzie.Common.Types.Result;
+
 // ReSharper disable InconsistentNaming
 namespace Ruzzie.Common.Types.UnitTests
 {
@@ -58,109 +58,109 @@ namespace Ruzzie.Common.Types.UnitTests
         {
             string stringify(uint i) => $"error code: {i}";
 
-            var x = Ok<uint,uint>(2);
-            Assert.AreEqual(x.MapErr(stringify), Ok<string, uint>(2));
+            var x = Result.Ok<uint,uint>(2);
+            Assert.AreEqual(x.MapErr(stringify), Result.Ok<string, uint>(2));
             
-            x = Err<uint,uint>(13);
-            Assert.AreEqual(x.MapErr(stringify), Err<string,uint>("error code: 13"));
+            x = Result.Err<uint,uint>(13);
+            Assert.AreEqual(x.MapErr(stringify), Result.Err<string,uint>("error code: 13"));
         }
 
         [Test]
         public void AndExample_One()
         {
-            var x = Ok<string, uint>(2);
-            var y = Err<string, string>("late error");
-            Assert.AreEqual(x.And(y), Err<string, string>("late error"));
+            var x = Result.Ok<string, uint>(2);
+            var y = Result.Err<string, string>("late error");
+            Assert.AreEqual(x.And(y), Result.Err<string, string>("late error"));
         }
 
         [Test]
         public void AndExample_Two()
         {
-            var x = Err<string, uint>("early error");
-            var y = Ok<string, string>("foo");
-            Assert.AreEqual(x.And(y), Err<string, string>("early error"));
+            var x = Result.Err<string, uint>("early error");
+            var y = Result.Ok<string, string>("foo");
+            Assert.AreEqual(x.And(y), Result.Err<string, string>("early error"));
         }
 
         [Test]
         public void AndExample_Three()
         {
-            var x = Err<string, uint>("not a 2");
-            var y = Err<string, string>("late error");
-            Assert.AreEqual(x.And(y), Err<string, string>("not a 2"));
+            var x = Result.Err<string, uint>("not a 2");
+            var y = Result.Err<string, string>("late error");
+            Assert.AreEqual(x.And(y), Result.Err<string, string>("not a 2"));
         }
 
         [Test]
         public void AndExample_Four()
         {
-            var x = Ok<string, uint>(2);
-            var y = Ok<string, string>("different result type");
-            Assert.AreEqual(x.And(y), Ok<string, string>("different result type"));
+            var x = Result.Ok<string, uint>(2);
+            var y = Result.Ok<string, string>("different result type");
+            Assert.AreEqual(x.And(y), Result.Ok<string, string>("different result type"));
         }
 
         [Test]
         public void AndThenExample()
         {
-            Result<uint, uint> sq(uint x) => Ok<uint, uint>(x * x);
-            Result<uint, uint> err(uint x) => Err<uint, uint>(x);
+            Result<uint, uint> sq(uint x) => Result.Ok<uint, uint>(x * x);
+            Result<uint, uint> err(uint x) => Result.Err<uint, uint>(x);
 
-            Assert.AreEqual(Ok<uint, uint>(2).AndThen(sq).AndThen(sq), Ok<uint, uint>(16));
-            Assert.AreEqual(Ok<uint, uint>(2).AndThen(sq).AndThen(err), Err<uint, uint>(4));
-            Assert.AreEqual(Ok<uint, uint>(2).AndThen(err).AndThen(sq), Err<uint, uint>(2));
-            Assert.AreEqual(Err<uint, uint>(3).AndThen(sq).AndThen(sq), Err<uint, uint>(3));
+            Assert.AreEqual(Result.Ok<uint, uint>(2).AndThen(sq).AndThen(sq), Result.Ok<uint, uint>(16));
+            Assert.AreEqual(Result.Ok<uint, uint>(2).AndThen(sq).AndThen(err), Result.Err<uint, uint>(4));
+            Assert.AreEqual(Result.Ok<uint, uint>(2).AndThen(err).AndThen(sq), Result.Err<uint, uint>(2));
+            Assert.AreEqual(Result.Err<uint, uint>(3).AndThen(sq).AndThen(sq), Result.Err<uint, uint>(3));
         }
 
         [Test]
         public void OrExample_One()
         {
-            var x = Ok<string, uint>(2);
-            var y = Err<string, uint>("late error");
-            Assert.AreEqual(x.Or(y), Ok<string, uint>(2));
+            var x = Result.Ok<string, uint>(2);
+            var y = Result.Err<string, uint>("late error");
+            Assert.AreEqual(x.Or(y), Result.Ok<string, uint>(2));
         }
 
         [Test]
         public void OrExample_Two()
         {
-            var x = Err<string, uint>("early error");
-            var y = Ok<string, uint>(2);
-            Assert.AreEqual(x.Or(y), Ok<string, uint>(2));
+            var x = Result.Err<string, uint>("early error");
+            var y = Result.Ok<string, uint>(2);
+            Assert.AreEqual(x.Or(y), Result.Ok<string, uint>(2));
         }
 
         [Test]
         public void OrExample_Three()
         {
-            var x = Err<string, uint>("not a 2");
-            var y = Err<string, uint>("late error");
-            Assert.AreEqual(x.Or(y), Err<string, uint>("late error"));
+            var x = Result.Err<string, uint>("not a 2");
+            var y = Result.Err<string, uint>("late error");
+            Assert.AreEqual(x.Or(y), Result.Err<string, uint>("late error"));
         }
 
         [Test]
         public void OrExample_Four()
         {
-            var x = Ok<string, uint>(2);
-            var y = Ok<string, uint>(100);
-            Assert.AreEqual(x.Or(y), Ok<string, uint>(2));
+            var x = Result.Ok<string, uint>(2);
+            var y = Result.Ok<string, uint>(100);
+            Assert.AreEqual(x.Or(y), Result.Ok<string, uint>(2));
         }
 
         [Test]
         public void OrElseExample()
         {
-            Result<uint, uint> sq(uint x) => Ok<uint, uint>(x * x);
-            Result<uint, uint> err(uint x) => Err<uint, uint>(x);
+            Result<uint, uint> sq(uint x) => Result.Ok<uint, uint>(x * x);
+            Result<uint, uint> err(uint x) => Result.Err<uint, uint>(x);
 
-            Assert.AreEqual(Ok<uint, uint>(2).OrElse(sq).OrElse(sq), Ok<uint, uint>(2));
-            Assert.AreEqual(Ok<uint, uint>(2).OrElse(err).OrElse(sq), Ok<uint, uint>(2));
-            Assert.AreEqual(Err<uint, uint>(3).OrElse(sq).OrElse(err), Ok<uint, uint>(9));
-            Assert.AreEqual(Err<uint, uint>(3).OrElse(err).OrElse(err), Err<uint, uint>(3));
+            Assert.AreEqual(Result.Ok<uint, uint>(2).OrElse(sq).OrElse(sq), Result.Ok<uint, uint>(2));
+            Assert.AreEqual(Result.Ok<uint, uint>(2).OrElse(err).OrElse(sq), Result.Ok<uint, uint>(2));
+            Assert.AreEqual(Result.Err<uint, uint>(3).OrElse(sq).OrElse(err), Result.Ok<uint, uint>(9));
+            Assert.AreEqual(Result.Err<uint, uint>(3).OrElse(err).OrElse(err), Result.Err<uint, uint>(3));
         }
 
         [Test]
         public void UnwrapOrExample()
         {
             uint optb = 2;
-            var x = Ok<string, uint>(9);
+            var x = Result.Ok<string, uint>(9);
             Assert.AreEqual(x.UnwrapOr(optb), 9);
 
-            var y = Err<string, uint>("error");
+            var y = Result.Err<string, uint>("error");
             Assert.AreEqual(y.UnwrapOr(optb), optb);
         }
 
@@ -169,8 +169,8 @@ namespace Ruzzie.Common.Types.UnitTests
         {
             int Count(string x) => x.Length;
 
-            Assert.AreEqual(Ok<string,int>(2).UnwrapOrElse(Count), 2);
-            Assert.AreEqual(Err<string,int>("foo").UnwrapOrElse(Count), 3);
+            Assert.AreEqual(Result.Ok<string,int>(2).UnwrapOrElse(Count), 2);
+            Assert.AreEqual(Result.Err<string,int>("foo").UnwrapOrElse(Count), 3);
         }
 
         [Test]
@@ -241,8 +241,8 @@ namespace Ruzzie.Common.Types.UnitTests
         [Test]
         public void OpInEquality()
         {
-            var err = Err<int, string>(12);
-            var ok = Ok<int, string>("12");
+            var err = Result.Err<int, string>(12);
+            var ok = Result.Ok<int, string>("12");
 
             (err != ok).Should().BeTrue();
         }

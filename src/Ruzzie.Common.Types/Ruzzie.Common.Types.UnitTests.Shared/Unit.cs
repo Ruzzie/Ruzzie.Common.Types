@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using FluentAssertions;
+﻿using FluentAssertions;
 using NUnit.Framework;
 
-namespace Ruzzie.Common.Types.UnitTests.Shared
+namespace Ruzzie.Common.Types.UnitTests
 {
     [TestFixture]
     public class UnitTests

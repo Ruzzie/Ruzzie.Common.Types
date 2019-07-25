@@ -1,7 +1,7 @@
 ﻿using System;
 using FluentAssertions;
 using NUnit.Framework;
-using static Ruzzie.Common.Types.Option;
+
 namespace Ruzzie.Common.Types.UnitTests
 {
     [TestFixture]
@@ -32,26 +32,26 @@ namespace Ruzzie.Common.Types.UnitTests
         [Test]
         public void MapOrExample()
         {
-            var x = Some("foo");
+            var x = Option.Some("foo");
             Assert.AreEqual(x.MapOr(42, v=> v.Length), 3);
 
-            var y = None<string>();
+            var y = Option.None<string>();
             Assert.AreEqual(y.MapOr(42, v=> v.Length), 42);
         }
 
         [Test]
         public void UnwrapOrExample()
         {
-            Assert.AreEqual(Some("car").UnwrapOr("bike"), "car");
-            Assert.AreEqual(None<string>().UnwrapOr("bike"), "bike");
+            Assert.AreEqual(Option.Some("car").UnwrapOr("bike"), "car");
+            Assert.AreEqual(Option.None<string>().UnwrapOr("bike"), "bike");
         }
 
         [Test]
         public void UnwrapOrElseExample()
         {
             var k = 10;
-            Assert.AreEqual(Some(4).UnwrapOrElse(() => 2 * k), 4);
-            Assert.AreEqual(None<int>().UnwrapOrElse(() => 2 * k), 20);
+            Assert.AreEqual(Option.Some(4).UnwrapOrElse(() => 2 * k), 4);
+            Assert.AreEqual(Option.None<int>().UnwrapOrElse(() => 2 * k), 20);
         }
 
         [Test]

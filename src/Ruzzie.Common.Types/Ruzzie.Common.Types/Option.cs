@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Runtime.Serialization;
 
 namespace Ruzzie.Common.Types
 {
@@ -18,13 +19,15 @@ namespace Ruzzie.Common.Types
         
     }
 
-   
+    [Serializable]
     [DebuggerDisplay("{"+nameof(_variant) + "}, {"+nameof(_value) + "}")]
-    public readonly struct Option<TValue> : IOption<TValue>, IEquatable<Option<TValue>>
+    public readonly struct Option<TValue> : IOption<TValue>, IEquatable<Option<TValue>>, ISerializable
     {
         public static readonly Option<TValue> None = new Option<TValue>(Unit.Void);
         private readonly OptionVariant _variant;
         private readonly TValue _value;
+        private const string VariantFieldName = "variant";
+        private const string ValueFieldName = "value";
 
         public static Option<TValue> Some(in TValue value)
         {
@@ -37,7 +40,7 @@ namespace Ruzzie.Common.Types
             _variant = OptionVariant.None;
             _value = default!;
         }
-
+        
         public Option(in TValue value)
         {
             _value = value;
@@ -119,6 +122,30 @@ namespace Ruzzie.Common.Types
             return Unit.Void.GetHashCode();
         }
 
+        //Serialize
+        public void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            info.AddValue(VariantFieldName, (byte) _variant);
+            if (IsSome())
+            {
+                info.AddValue(ValueFieldName, _value);
+            }
+        }
+
+        //Deserialize
+        private Option(SerializationInfo serializationInfo, StreamingContext streamingContext)
+        {
+            _variant = (OptionVariant) serializationInfo.GetByte(VariantFieldName);
+            if (_variant == OptionVariant.Some)
+            {
+                _value = (TValue) serializationInfo.GetValue(ValueFieldName, typeof(TValue));
+            }
+            else
+            {
+                _value = default!;
+            }
+        }
+
         public static bool operator ==(Option<TValue> leftOption, Option<TValue> rightOption)
         {
             return Equals(leftOption, rightOption);
@@ -134,5 +161,7 @@ namespace Ruzzie.Common.Types
             None = 0,
             Some = 1
         }
+
+      
     }
 }

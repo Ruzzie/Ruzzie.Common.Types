@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 
 namespace Ruzzie.Common.Types
 {
@@ -84,7 +85,8 @@ namespace Ruzzie.Common.Types
     /// <remarks>The default is Err. When <see cref="Result{TError,T}"/> is initialized as default, it will throw a <exception cref="PanicException{TError}"></exception> when trying to obtain the err value.
     /// This such that chaining and composing results that are ok should work with the default.
     /// </remarks>
-    public readonly struct Result<TError, T>  : IEitherValueType<TError, T>, IEquatable<Result<TError, T>>, IResult<TError, T>
+    [Serializable]
+    public readonly struct Result<TError, T>  : IEitherValueType<TError, T>, IEquatable<Result<TError, T>>, IResult<TError, T>, ISerializable
     {
         private readonly bool _initialized;
         private readonly ResultVariant _variant;
@@ -95,6 +97,13 @@ namespace Ruzzie.Common.Types
         /// <inheritdoc />
         public bool IsErr => _variant == ResultVariant.Err;
 
+        /// <summary>
+        /// Gets the error value.
+        /// </summary>
+        /// <value>
+        /// The error value.
+        /// </value>
+        /// <exception cref="PanicException{TError}">When the result is not initialized (initialized as default).</exception>
         private TError ErrValue
         {
             get
@@ -290,10 +299,46 @@ namespace Ruzzie.Common.Types
             return IsOk ? _value : op(ErrValue);
         }
 
-        private enum ResultVariant
+        private enum ResultVariant : byte
         {
             Ok = 1,
             Err = 0,
+        }
+
+        private const string VariantFieldName = "variant";
+        private const string ValueFieldName = "ok";
+        private const string ErrFieldName = "err";
+
+        //Serialize
+        public void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            info.AddValue(VariantFieldName, (byte) _variant);
+            if (IsOk)
+            {
+                info.AddValue(ValueFieldName, _value);
+            }
+            else
+            {
+                info.AddValue(ErrFieldName, ErrValue);
+            }
+        }
+
+        //Deserialize
+        private Result(SerializationInfo serializationInfo, StreamingContext streamingContext)
+        {
+            _variant = (ResultVariant) serializationInfo.GetByte(VariantFieldName);
+            if (_variant == ResultVariant.Ok)
+            {
+                _value = (T) serializationInfo.GetValue(ValueFieldName, typeof(T));
+                _err = default!;
+                _initialized = true;
+            }
+            else
+            {
+                _err = (TError) serializationInfo.GetValue(ErrFieldName, typeof(TError));
+                _value = default!;
+                _initialized = true;
+            }
         }
     }
 }
