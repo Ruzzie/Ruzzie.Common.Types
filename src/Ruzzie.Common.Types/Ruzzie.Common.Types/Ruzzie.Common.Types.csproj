@@ -20,4 +20,12 @@
   <PropertyGroup>
     <NoWarn>1701;1702;1591</NoWarn>
   </PropertyGroup>
+  <ItemGroup>
+    <None Remove="Ruzzie.Common.Types.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Ruzzie.Common.Types.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
 </Project>
