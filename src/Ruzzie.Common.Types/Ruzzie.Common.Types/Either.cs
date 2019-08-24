@@ -141,11 +141,11 @@ namespace Ruzzie.Common.Types
     public interface IEither<out TLeft, out TRight>
     {
         /// <summary>
-        ///  Match pattern.
+        ///  Control flow based on pattern matching.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="onLeft">The on left.</param>
-        /// <param name="onRight">The on right.</param>
+        /// <typeparam name="T">The output type of the match.</typeparam>
+        /// <param name="onLeft">Calls this when the type is left.</param>
+        /// <param name="onRight">Calls this when the type is right.</param>
         /// <returns></returns>
         T Match<T>(Func<TLeft, T> onLeft, Func<TRight, T> onRight);
     }
@@ -215,12 +215,7 @@ namespace Ruzzie.Common.Types
         /// </returns>
         public static implicit operator Either<TLeft, TRight>(in TRight value) => new Either<TLeft, TRight>(value);
 
-        /// <summary>
-        /// Matches the specified on left.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="onLeft">The on left.</param>
-        /// <param name="onRight">The on right.</param>
+        ///<inheritdoc />
         /// <exception cref="EitherIsDefaultValueException">When Either is not initialized (created with default(T)) the exception will be thrown.</exception>
         /// <returns></returns>
         public T Match<T>(Func<TLeft, T> onLeft, Func<TRight, T> onRight)
@@ -239,12 +234,12 @@ namespace Ruzzie.Common.Types
         }
 
         /// <summary>
-        /// Matches the specified on left.
+        /// Match pattern.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="onLeft">The on left.</param>
         /// <param name="onRight">The on right.</param>
-        /// <returns></returns>
+        /// <returns>None when the the either type is default.</returns>
         public Option<T> Match<T>(Func<TLeft, Option<T>> onLeft, Func<TRight, Option<T>> onRight)
         {
             switch (_eitherStatus)

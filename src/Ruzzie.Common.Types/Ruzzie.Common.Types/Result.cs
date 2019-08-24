@@ -30,50 +30,74 @@ namespace Ruzzie.Common.Types
 
     public interface IResult<TError, T>
     {
+        /// <summary>
         ///Returns true if the result is Ok.
+        /// </summary>
         bool IsOk { get; }
         
+        /// <summary>
         ///Returns true if the result is Err.
+        /// </summary>
         bool IsErr { get; }
 
+        /// <summary>
         ///Converts from Result{TError, T} to Option{T}.
         /// Converts this into an Option{T}, discarding the error, if any.
+        /// </summary>
         Option<T> Ok();
 
+        /// <summary>
         ///Converts from Result{TError, T} to Option{T}.
         /// Converts this into an Option{T}, discarding the success value, if any.
+        /// </summary>
         Option<TError> Err();
         TU Match<TU>(Func<TError, TU> onErr, Func<T, TU> onOk);
         Result<TF, TU> Select<TF, TU>(Func<TError, TF> selectErr, Func<T, TU> selectOk);
 
+        /// <summary>
         ///Maps a Result{TErr,T} to Result{TErr,TU} by applying a function to a contained Ok value, leaving an Err value untouched.
         ///  This function can be used to compose the results of two functions.
+        /// </summary>
         Result<TError, TU> Map<TU>(Func<T, TU> mapResultTo);
 
+        /// <summary>
         ///Maps a Result{TErr,T} to Result{TF,T} by applying a function to a contained Err value, leaving an Ok value untouched.
         ///    This function can be used to pass through a successful result while handling an error.
+        /// </summary>
         Result<TF, T> MapErr<TF>(Func<TError, TF> handleError);
 
+        /// <summary>
         ///Returns res if the result is Ok, otherwise returns the Err value of self.
+        /// </summary>
         Result<TError, TU> And<TU>(Result<TError, TU> result);
 
+        /// <summary>
         ///Calls op if the result is Ok, otherwise returns the Err value of self.
         ///This function can be used for control flow based on Result values.
+        /// </summary>
         Result<TError, TU> AndThen<TU>(Func<T, Result<TError, TU>> op);
 
+        /// <summary>
         ///Returns res if the result is Err, otherwise returns the Ok value of self.
         ///    Arguments passed to or are eagerly evaluated; if you are passing the result of a function call, it is recommended to use or_else, which is lazily evaluated.
+        /// </summary>
         Result<TF, T> Or<TF>(Result<TF, T> result);
 
+        /// <summary>
         ///Calls op if the result is Err, otherwise returns the Ok value of self.
         ///    This function can be used for control flow based on result values.
+        /// </summary>
         Result<TF, T> OrElse<TF>(Func<TError, Result<TF, T>> op);
 
+        /// <summary>
         ///Unwraps a result, yielding the content of an Ok. Else, it returns optb.
         ///    Arguments passed to unwrap_or are eagerly evaluated; if you are passing the result of a function call, it is recommended to use unwrap_or_else, which is lazily evaluated.
+        /// </summary>
         T UnwrapOr(T optb);
 
+        /// <summary>
         ///Unwraps a result, yielding the content of an Ok. If the value is an Err then it calls op with its value.
+        /// </summary>
         T UnwrapOrElse(Func<TError, T> op);
     }
 
@@ -180,7 +204,8 @@ namespace Ruzzie.Common.Types
             }
             return Option<TError>.None;
         }
-
+        
+        /// <inheritdoc />
         public bool Equals(Result<TError, T> other)
         {
             if (!_initialized && !other._initialized)
@@ -201,11 +226,13 @@ namespace Ruzzie.Common.Types
             }
         }
 
+        /// <inheritdoc />
         public override bool Equals(object obj)
         {
             return obj is Result<TError, T> other && Equals(other);
         }
 
+        /// <inheritdoc />
         public override int GetHashCode()
         {
             if (!_initialized)
@@ -226,6 +253,7 @@ namespace Ruzzie.Common.Types
             return !left.Equals(right);
         }
 
+        /// <inheritdoc cref="IEither{TLeft,TRight}" />
         public TU Match<TU>(Func<TError, TU> onErr, Func<T, TU> onOk)
         {
             return IsOk ? onOk(_value) : onErr(ErrValue);
@@ -236,6 +264,7 @@ namespace Ruzzie.Common.Types
             return IsOk ? onOk(_value) : onErr(ErrValue);
         }
 
+        /// <inheritdoc />
         public Result<TF, TU> Select<TF, TU>(Func<TError, TF> selectErr, Func<T, TU> selectOk)
         {
             return IsOk
@@ -243,56 +272,72 @@ namespace Ruzzie.Common.Types
                 : Result<TF, TU>.Err(selectErr(ErrValue));
         }
 
+        /// <summary>
         ///Maps a Result{TErr,T} to Result{TErr,TU} by applying a function to a contained Ok value, leaving an Err value untouched.
         ///  This function can be used to compose the results of two functions.
+        /// </summary>
         public Result<TError, TU> Map<TU>(Func<T, TU> mapResultTo)
         {
             return IsOk ? Result<TError, TU>.Ok(mapResultTo(_value)) : Result<TError, TU>.Err(ErrValue);
         }
 
+        /// <summary>
         ///Maps a Result{TErr,T} to Result{TF,T} by applying a function to a contained Err value, leaving an Ok value untouched.
         ///    This function can be used to pass through a successful result while handling an error.
+        /// </summary>
         public Result<TF, T> MapErr<TF>(Func<TError, TF> handleError)
         {
             return IsOk ? Result<TF, T>.Ok(_value) : Result<TF, T>.Err(handleError(ErrValue));
         }
 
+        /// <summary>
         ///Returns res if the result is Ok, otherwise returns the Err value of self.
+        /// </summary>
         public Result<TError, TU> And<TU>(Result<TError, TU> result)
         {
             return IsOk ? result : Result<TError, TU>.Err(ErrValue);
         }
 
+        /// <summary>
         ///Calls op if the result is Ok, otherwise returns the Err value of self.
         ///This function can be used for control flow based on Result values.
+        /// </summary>
         public Result<TError, TU> AndThen<TU>(Func<T, Result<TError, TU>> op)
         {
             return IsOk ? op(_value) : Result<TError, TU>.Err(ErrValue);
         }
 
+        /// <summary>
         ///Returns res if the result is Err, otherwise returns the Ok value of self.
         ///    Arguments passed to or are eagerly evaluated; if you are passing the result of a function call, it is recommended to use or_else, which is lazily evaluated.
+        /// </summary>
         public Result<TF, T> Or<TF>(Result<TF, T> result)
         {
             return IsOk ? Result<TF, T>.Ok(_value) : result;
         }
 
+        /// <summary>
         ///Calls op if the result is Err, otherwise returns the Ok value of self.
         ///    This function can be used for control flow based on result values.
+        /// </summary>
         public Result<TF, T> OrElse<TF>(Func<TError, Result<TF, T>> op)
         {
             return IsOk ? Result<TF, T>.Ok(_value) : op(ErrValue);
         }
 
+        /// <summary>
         ///Unwraps a result, yielding the content of an Ok. Else, it returns optb.
         ///    Arguments passed to unwrap_or are eagerly evaluated; if you are passing the result of a function call, it is recommended to use unwrap_or_else, which is lazily evaluated.
+        /// </summary>
         public T UnwrapOr(T optb)
         {
             //Could use match function, but I assume this is faster.
             return IsOk ? _value : optb;
         }
 
+        /// <summary>
         ///Unwraps a result, yielding the content of an Ok. If the value is an Err then it calls op with its value.
+        /// </summary>
         public T UnwrapOrElse(Func<TError, T> op)
         {
             //Could use match function, but I assume this is faster.
@@ -310,6 +355,7 @@ namespace Ruzzie.Common.Types
         private const string ErrFieldName = "err";
 
         //Serialize
+        /// <inheritdoc />
         public void GetObjectData(SerializationInfo info, StreamingContext context)
         {
             info.AddValue(VariantFieldName, (byte) _variant);
