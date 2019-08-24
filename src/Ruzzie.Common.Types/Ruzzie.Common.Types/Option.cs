@@ -61,11 +61,6 @@ namespace Ruzzie.Common.Types
             return _variant == OptionVariant.None ? onNone() : onSome(_value);
         }
 
-        public T Match<T>(Func<TValue, T> onSome, Func<T> onNone)
-        {
-            return _variant == OptionVariant.None ? onNone() : onSome(_value);
-        }
-
         public IOption<TResult> Select<TResult>(Func<TValue, TResult> selector)
         {
             if (IsSome())
