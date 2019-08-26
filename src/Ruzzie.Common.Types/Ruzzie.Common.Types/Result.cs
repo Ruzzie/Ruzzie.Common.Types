@@ -27,7 +27,6 @@ namespace Ruzzie.Common.Types
         }
     }
 
-
     public interface IResult<TError, T>
     {
         /// <summary>
@@ -106,11 +105,12 @@ namespace Ruzzie.Common.Types
     /// </summary>
     /// <typeparam name="TError">The type of the Err value.</typeparam>
     /// <typeparam name="T">The type of the Ok value.</typeparam>
-    /// <remarks>The default is Err. When <see cref="Result{TError,T}"/> is initialized as default, it will throw a <exception cref="PanicException{TError}"></exception> when trying to obtain the err value.
+    /// <remarks>
+    /// The default is Err. When <see cref="Result{TError,T}" /> is initialized as default, it will throw a <exception cref="PanicException{TError}"></exception> when trying to obtain the err value.
     /// This such that chaining and composing results that are ok should work with the default.
     /// </remarks>
     [Serializable]
-    public readonly struct Result<TError, T>  : IEitherValueType<TError, T>, IEquatable<Result<TError, T>>, IResult<TError, T>, ISerializable
+    public readonly struct Result<TError, T> : IEitherValueType<TError, T>, IEquatable<Result<TError, T>>, IResult<TError, T>, ISerializable
     {
         private readonly bool _initialized;
         private readonly ResultVariant _variant;
@@ -134,7 +134,7 @@ namespace Ruzzie.Common.Types
             {
                 if (!_initialized)
                 {
-                    throw ResultPanicExtensions.CreatePanicExceptionForErr("Result is uninitialized. You cannot obtain the Err value.", _err);
+                    throw ResultPanicExtensions.CreatePanicExceptionForErr($"Result is uninitialized. You cannot obtain the Err value.", _err);
                 }
                 return _err;
             }
@@ -156,17 +156,17 @@ namespace Ruzzie.Common.Types
         {
         }
 
-        public static implicit operator (Option<TError> err, Option<T> ok)(in Result<TError,T> res)
+        public static implicit operator (Option<TError> err, Option<T> ok)(in Result<TError, T> res)
         {
             return (err: res.Err(), ok: res.Ok());
         }
 
-        public static implicit operator Option<T>(in Result<TError,T> res)
+        public static implicit operator Option<T>(in Result<TError, T> res)
         {
             return res.Ok();
         }
 
-        public static implicit operator Option<TError>(in Result<TError,T> res)
+        public static implicit operator Option<TError>(in Result<TError, T> res)
         {
             return res.Err();
         }
@@ -204,7 +204,7 @@ namespace Ruzzie.Common.Types
             }
             return Option<TError>.None;
         }
-        
+
         /// <inheritdoc />
         public bool Equals(Result<TError, T> other)
         {
@@ -232,7 +232,14 @@ namespace Ruzzie.Common.Types
             return obj is Result<TError, T> other && Equals(other);
         }
 
-        /// <inheritdoc />
+
+        /// <summary>
+        /// Returns a hash code for this instance. When the result is <see cref="ResultVariant.Ok"/> this returns the hashcode of the {T} type value. When the result is <see cref="ResultVariant.Err"/> this returns the hashcode of the {TError} type value.
+        /// When not initialized this returns 0.
+        /// </summary>
+        /// <returns>
+        /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
+        /// </returns>
         public override int GetHashCode()
         {
             if (!_initialized)
@@ -242,6 +249,7 @@ namespace Ruzzie.Common.Types
 
             return IsOk ? _value?.GetHashCode() ?? 0 : _err?.GetHashCode() ?? 0;
         }
+
 
         public static bool operator ==(Result<TError, T> left, Result<TError, T> right)
         {
@@ -353,7 +361,7 @@ namespace Ruzzie.Common.Types
         /// <inheritdoc />
         public void GetObjectData(SerializationInfo info, StreamingContext context)
         {
-            info.AddValue(VariantFieldName, (byte) _variant);
+            info.AddValue(VariantFieldName, (byte)_variant);
             if (IsOk)
             {
                 info.AddValue(ValueFieldName, _value);
@@ -367,16 +375,16 @@ namespace Ruzzie.Common.Types
         //Deserialize
         private Result(SerializationInfo serializationInfo, StreamingContext streamingContext)
         {
-            _variant = (ResultVariant) serializationInfo.GetByte(VariantFieldName);
+            _variant = (ResultVariant)serializationInfo.GetByte(VariantFieldName);
             if (_variant == ResultVariant.Ok)
             {
-                _value = (T) serializationInfo.GetValue(ValueFieldName, typeof(T));
+                _value = (T)serializationInfo.GetValue(ValueFieldName, typeof(T));
                 _err = default!;
                 _initialized = true;
             }
             else
             {
-                _err = (TError) serializationInfo.GetValue(ErrFieldName, typeof(TError));
+                _err = (TError)serializationInfo.GetValue(ErrFieldName, typeof(TError));
                 _value = default!;
                 _initialized = true;
             }

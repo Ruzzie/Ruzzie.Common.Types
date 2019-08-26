@@ -4,9 +4,10 @@ namespace Ruzzie.Common.Types
 {
     public static class ResultPanicExtensions
     {
-        internal static PanicException<TError> CreatePanicExceptionForErr<TError>(string message, TError error)
+        internal static PanicException<TError> CreatePanicExceptionForErr<TError>(FormattableString message, TError error)
         {
-            return new PanicException<TError>(error,FormattableString.Invariant($"{message}: {error?.IfDebug()}"));
+            return new PanicException<TError>(error,
+                FormattableString.Invariant($"{FormattableString.Invariant(message)}: {error?.IfDebug()}"));
         }
 
         /// <summary>
@@ -19,7 +20,7 @@ namespace Ruzzie.Common.Types
 
             static T OnErrorUnwrapFail(TError e)
             {
-                throw CreatePanicExceptionForErr("called `Result::unwrap()` on an `Err` value", e);
+                throw CreatePanicExceptionForErr($"called `{nameof(Unwrap)}` on an `Error` value", e);
             }
         }
 
@@ -38,7 +39,7 @@ namespace Ruzzie.Common.Types
 
             T OnErrorExpectFail(TError e)
             {
-                throw CreatePanicExceptionForErr(message, e);
+                throw CreatePanicExceptionForErr($"{message}", e);
             }
         }
 
@@ -52,7 +53,7 @@ namespace Ruzzie.Common.Types
 
             static TError OnOkFail(T ok)
             {
-                throw CreatePanicExceptionForErr("called `Result::unwrap_err()` on an `Ok` value", ok);
+                throw CreatePanicExceptionForErr($"called `{nameof(UnwrapError)}` on an `Ok` value", ok);
             }
         }
 
@@ -66,7 +67,7 @@ namespace Ruzzie.Common.Types
 
             TError OnOkFail(T ok)
             {
-                throw CreatePanicExceptionForErr(message, ok);
+                throw CreatePanicExceptionForErr($"{message}", ok);
             }
         }
     }

@@ -70,14 +70,16 @@ namespace Ruzzie.Common.Types
 
             return Option<TResult>.None;
         }
-
+        ///<summary>
         ///Returns the contained value or a default.
+        ///</summary>
         public TValue UnwrapOr(TValue @default)
         {
             return IsSome() ? _value : @default;
         }
-
+        ///<summary>
         ///Returns the contained value or computes it from a closure.
+        ///</summary>
         public TValue UnwrapOrElse(Func<TValue> orElse)
         {
             return IsSome() ? _value : orElse();
@@ -156,7 +158,5 @@ namespace Ruzzie.Common.Types
             None = 0,
             Some = 1
         }
-
-      
     }
 }
