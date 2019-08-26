@@ -14,25 +14,14 @@ namespace Ruzzie.Common.Types
             return new Right<TLeft, TRight>(rightValue);
         }
 
-        public static IEitherReferenceType<TLeftResult, TRightResult> SelectBoth<TLeft, TLeftResult, TRight, TRightResult>(
-            this IEitherReferenceType<TLeft,TRight> source,
-            Func<TLeft, TLeftResult> selectLeft,
-            Func<TRight, TRightResult> selectRight)
+        public static IEitherReferenceType<TLeftResult, TRight> MapLeft<TLeft,TRight,TLeftResult>(this IEitherReferenceType<TLeft,TRight> source, Func<TLeft, TLeftResult> selector)
         {
-            return source.Match<IEitherReferenceType<TLeftResult, TRightResult>>(
-                onLeft: leftValue => new Left<TLeftResult, TRightResult>(selectLeft(leftValue)),
-                onRight: rightValue => new Right<TLeftResult, TRightResult>(selectRight(rightValue)));
+            return source.Map(selector, r => r);
         }
 
-        public static IEitherReferenceType<TLeftResult, TRight> SelectLeft<TLeft,TRight,TLeftResult>(this IEitherReferenceType<TLeft,TRight> source, Func<TLeft, TLeftResult> selector)
+        public static IEitherReferenceType<TLeft, TRightResult> MapRight<TLeft,TRight,TRightResult>(this IEitherReferenceType<TLeft,TRight> source, Func<TRight, TRightResult> selector)
         {
-            return source.SelectBoth(selector, r => r);
+            return source.Map(l => l, selector);
         }
-
-        public static IEitherReferenceType<TLeft, TRightResult> SelectRight<TLeft,TRight,TRightResult>(this IEitherReferenceType<TLeft,TRight> source, Func<TRight, TRightResult> selector)
-        {
-            return source.SelectBoth(l => l, selector);
-        }
-
     }
 }

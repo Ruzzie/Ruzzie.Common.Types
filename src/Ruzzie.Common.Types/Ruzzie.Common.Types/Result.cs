@@ -50,14 +50,15 @@ namespace Ruzzie.Common.Types
         /// Converts this into an Option{T}, discarding the success value, if any.
         /// </summary>
         Option<TError> Err();
+       
         TU Match<TU>(Func<TError, TU> onErr, Func<T, TU> onOk);
-        Result<TF, TU> Select<TF, TU>(Func<TError, TF> selectErr, Func<T, TU> selectOk);
+        
 
         /// <summary>
         ///Maps a Result{TErr,T} to Result{TErr,TU} by applying a function to a contained Ok value, leaving an Err value untouched.
         ///  This function can be used to compose the results of two functions.
         /// </summary>
-        Result<TError, TU> Map<TU>(Func<T, TU> mapResultTo);
+        Result<TError, TU> MapOk<TU>(Func<T, TU> mapResultTo);
 
         /// <summary>
         ///Maps a Result{TErr,T} to Result{TF,T} by applying a function to a contained Err value, leaving an Ok value untouched.
@@ -213,17 +214,14 @@ namespace Ruzzie.Common.Types
                 return true;
             }
 
-            switch (_variant)
+            return _variant switch
             {
-                case ResultVariant.Ok:
-                    return EqualityComparer<T>.Default.Equals(_value, other._value);
-                case ResultVariant.Err:
-                    return EqualityComparer<TError>.Default.Equals(_err, other._err);
-                default:
-                    return _initialized == other._initialized && _variant == other._variant &&
-                           EqualityComparer<T>.Default.Equals(_value, other._value) &&
-                           EqualityComparer<TError>.Default.Equals(_err, other._err);
-            }
+                ResultVariant.Ok => EqualityComparer<T>.Default.Equals(_value, other._value),
+                ResultVariant.Err => EqualityComparer<TError>.Default.Equals(_err, other._err),
+                _ => (_initialized == other._initialized && _variant == other._variant &&
+                      EqualityComparer<T>.Default.Equals(_value, other._value) &&
+                      EqualityComparer<TError>.Default.Equals(_err, other._err))
+            };
         }
 
         /// <inheritdoc />
@@ -268,7 +266,7 @@ namespace Ruzzie.Common.Types
         }
 
         /// <inheritdoc />
-        public Result<TF, TU> Select<TF, TU>(Func<TError, TF> selectErr, Func<T, TU> selectOk)
+        public Result<TF, TU> Map<TF, TU>(Func<TError, TF> selectErr, Func<T, TU> selectOk)
         {
             return IsOk
                 ? Result<TF, TU>.Ok(selectOk(_value))
@@ -279,7 +277,7 @@ namespace Ruzzie.Common.Types
         ///Maps a Result{TErr,T} to Result{TErr,TU} by applying a function to a contained Ok value, leaving an Err value untouched.
         ///  This function can be used to compose the results of two functions.
         /// </summary>
-        public Result<TError, TU> Map<TU>(Func<T, TU> mapResultTo)
+        public Result<TError, TU> MapOk<TU>(Func<T, TU> mapResultTo)
         {
             return IsOk ? Result<TError, TU>.Ok(mapResultTo(_value)) : Result<TError, TU>.Err(ErrValue);
         }

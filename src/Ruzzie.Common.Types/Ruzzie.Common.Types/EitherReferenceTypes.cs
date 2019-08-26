@@ -11,7 +11,7 @@ namespace Ruzzie.Common.Types
     /// <seealso cref="Ruzzie.Common.Types.IEither{TLeft, TRight}" />
     public interface IEitherReferenceType<out TLeft, out TRight> : IEither<TLeft, TRight>
     {
-        IEitherReferenceType<TLeftResult, TRightResult> SelectBoth<TLeftResult, TRightResult>(
+        IEitherReferenceType<TLeftResult, TRightResult> Map<TLeftResult, TRightResult>(
             Func<TLeft, TLeftResult> selectLeft,
             Func<TRight, TRightResult> selectRight);
     }
@@ -30,7 +30,7 @@ namespace Ruzzie.Common.Types
             return onLeft(_value);
         }
 
-        public IEitherReferenceType<TLeftResult, TRightResult> SelectBoth<TLeftResult, TRightResult>(Func<TLeft, TLeftResult> selectLeft, Func<TRight, TRightResult> selectRight)
+        public IEitherReferenceType<TLeftResult, TRightResult> Map<TLeftResult, TRightResult>(Func<TLeft, TLeftResult> selectLeft, Func<TRight, TRightResult> selectRight)
         {
 
             return new Left<TLeftResult, TRightResult>(selectLeft(_value));
@@ -92,7 +92,7 @@ namespace Ruzzie.Common.Types
             return onRight(_value);
         }
 
-        public IEitherReferenceType<TLeftResult, TRightResult> SelectBoth<TLeftResult, TRightResult>(Func<TLeft, TLeftResult> selectLeft, Func<TRight, TRightResult> selectRight)
+        public IEitherReferenceType<TLeftResult, TRightResult> Map<TLeftResult, TRightResult>(Func<TLeft, TLeftResult> selectLeft, Func<TRight, TRightResult> selectRight)
         {
             return new Right<TLeftResult, TRightResult>(selectRight(_value));
         }

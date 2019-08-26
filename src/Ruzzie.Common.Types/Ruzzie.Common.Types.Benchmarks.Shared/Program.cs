@@ -41,25 +41,25 @@ namespace Ruzzie.Common.Types.Benchmarks
         [Benchmark]
         public Result<string, int> ResultStruct_WithStringIntValue()
         {
-            return new Result<string, int>(_randomInt).Select(Select, Select);
+            return new Result<string, int>(_randomInt).Map(Select, Select);
         }
 
         [Benchmark]
         public Result<string, List<object>> ResultStruct_WithStringObjectValue()
         {
-            return new Result<string, List<object>>(_randomObject).Select(Select, Select);
+            return new Result<string, List<object>>(_randomObject).Map(Select, Select);
         }
 
         [Benchmark]
         public IEither<string, int> Right_WithStringIntValue()
         {
-            return new Right<string,int>(_randomInt).SelectBoth(Select, Select);
+            return new Right<string,int>(_randomInt).Map(Select, Select);
         }
 
         [Benchmark]
         public IEither<string, List<object>> Right_WithStringObjectValue()
         {
-            return new Right<string, List<object>>(_randomObject).SelectBoth(Select, Select);
+            return new Right<string, List<object>>(_randomObject).Map(Select, Select);
         }
 
         static T Select<T>(T value)

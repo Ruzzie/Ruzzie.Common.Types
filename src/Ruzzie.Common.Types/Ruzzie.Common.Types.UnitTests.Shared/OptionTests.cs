@@ -183,7 +183,7 @@ namespace Ruzzie.Common.Types.UnitTests
             Func<string, string> id = x => x;
             var m = new Option<string>(value);
             
-            Assert.AreEqual(m, m.Select(id));
+            Assert.AreEqual(m, m.Map(id));
         }
 
         [Test]
@@ -192,7 +192,7 @@ namespace Ruzzie.Common.Types.UnitTests
             Func<string, string> id = x => x;
             var m = new Option<string>();
  
-            Assert.AreEqual(m, m.Select(id));
+            Assert.AreEqual(m, m.Map(id));
         }
 
         [Theory]
@@ -208,7 +208,7 @@ namespace Ruzzie.Common.Types.UnitTests
             Func<int, bool>   f = i => i % 2 == 0;
             var m = new Option<string>(value);
  
-            Assert.AreEqual(m.Select(g).Select(f), m.Select(s => f(g(s))));
+            Assert.AreEqual(m.Map(g).Map(f), m.Map(s => f(g(s))));
         }
 
         [Test]            
@@ -219,7 +219,7 @@ namespace Ruzzie.Common.Types.UnitTests
             Func<int, bool>   f = i => i % 2 == 0;
             var m = new Option<string>();
  
-            Assert.AreEqual(m.Select(g).Select(f), m.Select(s => f(g(s))));
+            Assert.AreEqual(m.Map(g).Map(f), m.Map(s => f(g(s))));
         }
     }
 }

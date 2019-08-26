@@ -5,135 +5,6 @@ using System.Diagnostics.CodeAnalysis;
 namespace Ruzzie.Common.Types
 {
     /// <summary>
-    /// Extension methods for the <see cref="Either{TLeft,TRight}"/> type.
-    /// </summary>
-    public static class EitherExtensions
-    {
-        /// <summary>
-        /// Selects both.
-        /// </summary>
-        /// <typeparam name="TLeft">The type of the left.</typeparam>
-        /// <typeparam name="TLeftResult">The type of the left result.</typeparam>
-        /// <typeparam name="TRight">The type of the right.</typeparam>
-        /// <typeparam name="TRightResult">The type of the right result.</typeparam>
-        /// <param name="source">The source.</param>
-        /// <param name="selectLeft">The select left to use when left.</param>
-        /// <param name="selectRight">The select right to use when right..</param>
-        /// <returns></returns>
-        public static Either<TLeftResult, TRightResult> SelectBoth<TLeft, TLeftResult, TRight, TRightResult>(
-            this Either<TLeft, TRight> source,
-            Func<TLeft, TLeftResult> selectLeft,
-            Func<TRight, TRightResult> selectRight)
-        {
-            return source.Match(
-                onLeft: leftValue => new Either<TLeftResult, TRightResult>(selectLeft(leftValue)),
-                onRight: rightValue => new Either<TLeftResult, TRightResult>(selectRight(rightValue)));
-        }
-
-        /// <summary>
-        /// Maps the left value to another type.
-        /// </summary>
-        /// <typeparam name="TLeft">The type of the left.</typeparam>
-        /// <typeparam name="TRight">The type of the right.</typeparam>
-        /// <typeparam name="TLeftResult">The type of the left result.</typeparam>
-        /// <param name="source">The source.</param>
-        /// <param name="selector">The selector.</param>
-        /// <returns></returns>
-        public static Either<TLeftResult, TRight> SelectLeft<TLeft,TRight,TLeftResult>(this Either<TLeft,TRight> source, Func<TLeft, TLeftResult> selector)
-        {
-            return source.SelectBoth(selector, r => r);
-        }
-
-        /// <summary>
-        /// Maps the right value to another type.
-        /// </summary>
-        /// <typeparam name="TLeft">The type of the left.</typeparam>
-        /// <typeparam name="TRight">The type of the right.</typeparam>
-        /// <typeparam name="TRightResult">The type of the right result.</typeparam>
-        /// <param name="source">The source.</param>
-        /// <param name="selector">The selector.</param>
-        /// <returns></returns>
-        public static Either<TLeft, TRightResult> SelectRight<TLeft,TRight,TRightResult>(this Either<TLeft,TRight> source, Func<TRight, TRightResult> selector)
-        {
-            return source.SelectBoth(l => l, selector);
-        }
-
-        /// <summary>
-        /// Map to a new type.
-        /// </summary>
-        /// <typeparam name="TLeft">The type of the left.</typeparam>
-        /// <typeparam name="TLeftResult">The type of the left result.</typeparam>
-        /// <typeparam name="TRight">The type of the right.</typeparam>
-        /// <typeparam name="TRightResult">The type of the right result.</typeparam>
-        /// <param name="source">The source.</param>
-        /// <param name="selectLeft">The select left.</param>
-        /// <param name="selectRight">The select right.</param>
-        /// <returns></returns>
-        public static Either<TLeftResult, TRightResult> SelectBoth<TLeft, TLeftResult, TRight, TRightResult>(
-            this IEither<TLeft, TRight> source,
-            Func<TLeft, TLeftResult> selectLeft,
-            Func<TRight, TRightResult> selectRight)
-        {
-            return source.Match(
-                onLeft: leftValue => new Either<TLeftResult, TRightResult>(selectLeft(leftValue)),
-                onRight: rightValue => new Either<TLeftResult, TRightResult>(selectRight(rightValue)));
-        }
-
-        /// <summary>
-        /// Maps the left value to a new type.
-        /// </summary>
-        /// <typeparam name="TLeft">The type of the left.</typeparam>
-        /// <typeparam name="TRight">The type of the right.</typeparam>
-        /// <typeparam name="TLeftResult">The type of the left result.</typeparam>
-        /// <param name="source">The source.</param>
-        /// <param name="selector">The selector.</param>
-        /// <returns></returns>
-        public static Either<TLeftResult, TRight> SelectLeft<TLeft,TRight,TLeftResult>(this IEither<TLeft,TRight> source, Func<TLeft, TLeftResult> selector)
-        {
-            return source.SelectBoth(selector, r => r);
-        }
-
-        /// <summary>
-        /// Maps the right value to a new type.
-        /// </summary>
-        /// <typeparam name="TLeft">The type of the left.</typeparam>
-        /// <typeparam name="TRight">The type of the right.</typeparam>
-        /// <typeparam name="TRightResult">The type of the right result.</typeparam>
-        /// <param name="source">The source.</param>
-        /// <param name="selector">The selector.</param>
-        /// <returns></returns>
-        public static Either<TLeft, TRightResult> SelectRight<TLeft,TRight,TRightResult>(this IEither<TLeft,TRight> source, Func<TRight, TRightResult> selector)
-        {
-            return source.SelectBoth(l => l, selector);
-        }
-
-
-        /// <summary>
-        /// Create a new Left value.
-        /// </summary>
-        /// <typeparam name="TLeft">The type of the left.</typeparam>
-        /// <typeparam name="TRight">The type of the right.</typeparam>
-        /// <param name="leftValue">The left value.</param>
-        /// <returns></returns>
-        public static Either<TLeft, TRight> AsLeft<TLeft, TRight>(this TLeft leftValue)
-        {
-            return new Either<TLeft, TRight>(leftValue);
-        }
-
-        /// <summary>
-        /// Create a new Right value.
-        /// </summary>
-        /// <typeparam name="TLeft">The type of the left.</typeparam>
-        /// <typeparam name="TRight">The type of the right.</typeparam>
-        /// <param name="rightValue">The right value.</param>
-        /// <returns></returns>
-        public static Either<TLeft, TRight> AsRight<TLeft, TRight>(this TRight rightValue)
-        {
-            return new Either<TLeft, TRight>(rightValue);
-        }
-    }
-
-    /// <summary>
     /// Basic interface for Either types
     /// </summary>
     /// <typeparam name="TLeft">The type of the left.</typeparam>
@@ -260,7 +131,7 @@ namespace Ruzzie.Common.Types
         /// <typeparam name="TLeftResult">The type of the left result.</typeparam>
         /// <param name="selector">The selector.</param>
         /// <returns></returns>
-        public Either<TLeftResult, TRight> SelectLeft<TLeftResult>(Func<TLeft, TLeftResult> selector)
+        public Either<TLeftResult, TRight> MapLeft<TLeftResult>(Func<TLeft, TLeftResult> selector)
         {
             switch (_eitherStatus)
             {
@@ -280,7 +151,7 @@ namespace Ruzzie.Common.Types
         /// <typeparam name="TRightResult">The type of the right result.</typeparam>
         /// <param name="selector">The selector.</param>
         /// <returns></returns>
-        public Either<TLeft, TRightResult> SelectRight<TRightResult>(Func<TRight, TRightResult> selector)
+        public Either<TLeft, TRightResult> MapRight<TRightResult>(Func<TRight, TRightResult> selector)
         {
             switch (_eitherStatus)
             {
@@ -302,7 +173,7 @@ namespace Ruzzie.Common.Types
         /// <param name="selectLeft">The select left.</param>
         /// <param name="selectRight">The select right.</param>
         /// <returns></returns>
-        public Either<TLeftResult, TRightResult> SelectBoth<TLeftResult, TRightResult>(
+        public Either<TLeftResult, TRightResult> Map<TLeftResult, TRightResult>(
                     Func<TLeft, TLeftResult> selectLeft,
                     Func<TRight, TRightResult> selectRight)
         {

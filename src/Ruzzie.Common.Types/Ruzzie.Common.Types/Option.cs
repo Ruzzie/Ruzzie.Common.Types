@@ -35,7 +35,9 @@ namespace Ruzzie.Common.Types
         }
 
         // ReSharper disable once UnusedParameter.Local
+#pragma warning disable IDE0060 // Remove unused parameter
         private Option(in Unit noValue)
+#pragma warning restore IDE0060 // Remove unused parameter
         {
             _variant = OptionVariant.None;
             _value = default!;
@@ -61,7 +63,7 @@ namespace Ruzzie.Common.Types
             return _variant == OptionVariant.None ? onNone() : onSome(_value);
         }
 
-        public IOption<TResult> Select<TResult>(Func<TValue, TResult> selector)
+        public IOption<TResult> Map<TResult>(Func<TValue, TResult> selector)
         {
             if (IsSome())
             {

@@ -111,7 +111,7 @@ namespace Ruzzie.Common.Types.UnitTests
         [Theory, TestCaseSource(nameof(BifunctorLawsData))]
         public void SelectLeftObeysFirstFunctorLaw(IEitherReferenceType<string, int> e)
         {
-            e.Should().Be(e.SelectLeft(l => Identity(l)));
+            e.Should().Be(e.MapLeft(l => Identity(l)));
         }
 
         //[Theory, TestCaseSource(nameof(BifunctorLawsData))]
@@ -123,7 +123,7 @@ namespace Ruzzie.Common.Types.UnitTests
         [Theory, TestCaseSource(nameof(BifunctorLawsData))]
         public void SelectRightWithExtensionMethodObeysFirstFunctorLaw(IEitherReferenceType<string, int> e)
         {
-            e.Should().Be(e.SelectRight(l => Identity(l)));
+            e.Should().Be(e.MapRight(l => Identity(l)));
         }
 
         //[Theory, TestCaseSource(nameof(BifunctorLawsData))]
@@ -135,7 +135,7 @@ namespace Ruzzie.Common.Types.UnitTests
         [Theory, TestCaseSource(nameof(BifunctorLawsData))]
         public void SelectBothOnExtensionMethodObeysFirstFunctorLaw(IEitherReferenceType<string, int> e)
         {
-            e.Should().Be(e.SelectBoth(l => Identity(l), r => Identity(r)));
+            e.Should().Be(e.Map(l => Identity(l), r => Identity(r)));
         }
 
         //[Theory, TestCaseSource(nameof(BifunctorLawsData))]
@@ -156,10 +156,10 @@ namespace Ruzzie.Common.Types.UnitTests
             bool f(string s) => string.IsNullOrWhiteSpace(s);
             DateTime g(int i) => new DateTime(i);
  
-            Assert.AreEqual(e.SelectBoth(f, g), e.SelectRight(g).SelectLeft(f));
+            Assert.AreEqual(e.Map(f, g), e.MapRight(g).MapLeft(f));
             Assert.AreEqual(
-                e.SelectLeft(f).SelectRight(g),
-                e.SelectRight(g).SelectLeft(f));
+                e.MapLeft(f).MapRight(g),
+                e.MapRight(g).MapLeft(f));
         }
 
         //[Theory, TestCaseSource(nameof(BifunctorLawsData))]
@@ -177,7 +177,7 @@ namespace Ruzzie.Common.Types.UnitTests
             bool f(int x) => x % 2 == 0;
             int g(string s) => s?.Length ?? 0;
  
-            Assert.AreEqual(e.SelectLeft(x => f(g(x))), e.SelectLeft(g).SelectLeft(f));
+            Assert.AreEqual(e.MapLeft(x => f(g(x))), e.MapLeft(g).MapLeft(f));
         }
 
         //[Theory, TestCaseSource(nameof(BifunctorLawsData))]
@@ -195,7 +195,7 @@ namespace Ruzzie.Common.Types.UnitTests
             char f(bool b) => b ? 'T' : 'F';
             bool g(int i) => i % 2 == 0;
  
-            Assert.AreEqual(e.SelectRight(x => f(g(x))), e.SelectRight(g).SelectRight(f));
+            Assert.AreEqual(e.MapRight(x => f(g(x))), e.MapRight(g).MapRight(f));
         }
 
         //[Theory, TestCaseSource(nameof(BifunctorLawsData))]
@@ -220,8 +220,8 @@ namespace Ruzzie.Common.Types.UnitTests
             bool i(int x) => x % 2 == 0;
  
             Assert.AreEqual(
-                e.SelectBoth(x => f(g(x)), y => h(i(y))),
-                e.SelectBoth(g, i).SelectBoth(f, h));
+                e.Map(x => f(g(x)), y => h(i(y))),
+                e.Map(g, i).Map(f, h));
         }
     }
 }
