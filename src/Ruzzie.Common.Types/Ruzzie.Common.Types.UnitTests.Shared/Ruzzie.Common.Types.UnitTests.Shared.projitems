@@ -11,6 +11,7 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)LeftRightTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EitherTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ResultPanicExtensionsTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serialization\OptionSerializationTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)OptionTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ParseIntError.cs" />
