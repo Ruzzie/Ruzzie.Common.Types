@@ -1,4 +1,5 @@
 ﻿using System;
+using ParseIntError = Ruzzie.Common.Types.Error<Ruzzie.Common.Types.UnitTests.ParseIntErrorKind, System.Exception>;
 
 namespace Ruzzie.Common.Types.UnitTests
 {

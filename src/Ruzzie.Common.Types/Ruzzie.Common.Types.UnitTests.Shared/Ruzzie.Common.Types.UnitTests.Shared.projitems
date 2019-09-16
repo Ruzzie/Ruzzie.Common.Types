@@ -9,12 +9,12 @@
     <Import_RootNamespace>Ruzzie.Common.Types.UnitTests</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)ErrorTypeTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LeftRightTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EitherTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ResultPanicExtensionsTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serialization\OptionSerializationTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)OptionTests.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ParseIntError.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ParseIntErrorKind.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serialization\ResultSerializationTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ResultTests.cs" />

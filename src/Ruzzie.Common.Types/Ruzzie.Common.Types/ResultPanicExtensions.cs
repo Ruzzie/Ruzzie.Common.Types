@@ -37,7 +37,7 @@ namespace Ruzzie.Common.Types
         }
 
         /// <summary>
-        /// Unwraps a result, yielding the content of an Ok.
+        /// Unwraps a result, yielding the content of an Ok. Throws an exception when the result is an Err.
         /// </summary>
         /// <exception>Panics if the value is an Err, with a panic message including the passed message, and the content of the Err.</exception>
         public static T Expect<TError,T>(this Result<TError,T> self, string message)

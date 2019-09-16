@@ -172,8 +172,8 @@ namespace Ruzzie.Common.Types
             return res.Err();
         }
 
-        //public static implicit operator Result<TError, T>(in T ok) => new Result<TError, T>(ok);
-        //public static implicit operator Result<TError, T>(in TError err) => new Result<TError, T>(err);
+        public static implicit operator Result<TError, T>(in T ok) => new Result<TError, T>(ok);
+        public static implicit operator Result<TError, T>(in TError err) => new Result<TError, T>(err);
 
         public static Result<TError, T> Ok(in T value)
         {
@@ -265,7 +265,7 @@ namespace Ruzzie.Common.Types
             return IsOk ? onOk(_value) : onErr(ErrValue);
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc cref="IEither{TLeft,TRight}" />
         public Result<TF, TU> Map<TF, TU>(Func<TError, TF> selectErr, Func<T, TU> selectOk)
         {
             return IsOk

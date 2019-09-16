@@ -4,8 +4,10 @@ namespace Ruzzie.Common.Types
 {
     public static class ResultExtensions
     {
+        ///<summary>
         ///Maps a Result{TError,T} to U by applying a function to a contained Ok value, or a fallback function to a contained Err value.
         ///This function can be used to unpack a successful result while handling an error.
+        ///</summary>
         public static TU MapOrElse<TU, TError, T>(this Result<TError, T> self, Func<TError, TU> fallback, Func<T, TU> mapResultTo)
         {
             return self.Match(fallback, mapResultTo);

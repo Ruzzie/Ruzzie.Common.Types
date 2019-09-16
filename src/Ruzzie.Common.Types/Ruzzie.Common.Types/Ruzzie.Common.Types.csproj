@@ -6,7 +6,7 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <WarningsAsErrors />
     <NeutralLanguage>en-US</NeutralLanguage>
-    <Version>0.0.1.0</Version>
+    <Version>0.0.2.0</Version>
     <Authors>Dorus Verhoeckx</Authors>
     <Company>D Crafting</Company>
     <Copyright>Copyright © Dorus Verhoeckx 2019</Copyright>
@@ -19,13 +19,6 @@
   </PropertyGroup>
   <PropertyGroup>
     <NoWarn>1701;1702;1591</NoWarn>
-  </PropertyGroup>
-  <ItemGroup>
-    <None Remove="Ruzzie.Common.Types.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Ruzzie.Common.Types.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
+	<Description>Some functional types (Either, Left, Right, Option, Result) for C#. Best used with non nullable reference types.</Description>
+  </PropertyGroup> 
 </Project>
