@@ -67,6 +67,8 @@ namespace Ruzzie.Common.Types
         /// <summary>
         /// Unwraps a result, yielding the content of an Err.
         /// </summary>
+        /// <param name="self">the result</param>
+        /// <param name="message">A panic message to pass when the result is ok.</param>
         /// <exception>Panics if the value is an Ok, with a panic message including the passed message, and the content of the Ok.</exception>
         public static TError ExpectError<TError, T>(this Result<TError, T> self, string message)
         {

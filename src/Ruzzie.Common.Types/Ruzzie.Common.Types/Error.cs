@@ -3,6 +3,12 @@ using System.Diagnostics;
 
 namespace Ruzzie.Common.Types
 {
+
+    public interface IHasExceptionSource<TException> where TException : Exception
+    {
+        Option<TException> ExceptionSource { get; }
+    }
+
     public interface IError
     {
         string Message { get; }
@@ -14,7 +20,7 @@ namespace Ruzzie.Common.Types
         TKind ErrorKind { get; }
     }
 
-    public readonly struct Error : IError
+    public readonly struct Error : IError, IHasExceptionSource<Exception>, IEquatable<Error>
     {
         public Error(string message) : this(message,Option<IError>.None)
         {
@@ -25,11 +31,58 @@ namespace Ruzzie.Common.Types
         {
             Message = message;
             Source = source;
+            ExceptionSource = Option<Exception>.None;
+        }
+
+        public Error(string message, Option<IError> source, Option<Exception> exceptionSource)
+        {
+            Message = message;
+            Source = source;
+            ExceptionSource = exceptionSource;
+        }
+
+        public Error(string message, Option<Exception> exceptionSource)
+        {
+            Message = message;
+            Source = Option.None<IError>();
+            ExceptionSource = exceptionSource;
         }
 
         public string Message { get; }
 
         public Option<IError> Source { get; }
+        public Option<Exception> ExceptionSource { get; }
+
+        public bool Equals(Error other)
+        {
+            return Message == other.Message && Source.Equals(other.Source) && ExceptionSource.Equals(other.ExceptionSource);
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is Error other && Equals(other);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var hashCode = (Message != null ? Message.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ Source.GetHashCode();
+                hashCode = (hashCode * 397) ^ ExceptionSource.GetHashCode();
+                return hashCode;
+            }
+        }
+
+        public static bool operator ==(Error left, Error right)
+        {
+            return left.Equals(right);
+        }
+
+        public static bool operator !=(Error left, Error right)
+        {
+            return !left.Equals(right);
+        }
     }
 
     [DebuggerDisplay("{" + nameof(ErrorKind) + "}:{"+nameof(Message)+"}")]
@@ -63,7 +116,7 @@ namespace Ruzzie.Common.Types
         public Option<IError> Source { get; }
     }
 
-    public class Error<TKind, TException> : IError<TKind> where TException : Exception where TKind: Enum
+    public class Error<TKind, TException> : IError<TKind>, IHasExceptionSource<TException> where TException : Exception where TKind: Enum
     {
         public Error(TKind errorKind,  Option<IError> source) : this(Enum.Format(typeof(TKind), errorKind, "d"), errorKind, source)
         {
