@@ -10,7 +10,6 @@ namespace Ruzzie.Common.Types.UnitTests
     [TestFixture]
     public class ErrorTypeTests
     {
-
         [Test]
         public void BasicErrorValueTypeWithOnlyMessageAndExceptionSourceCtor()
         {
@@ -59,6 +58,32 @@ namespace Ruzzie.Common.Types.UnitTests
             var error = new Error("Generic error",Option<IError>.None);
 
             error.Message.Should().Be("Generic error");
+        }
+
+        [Test]
+        public void ErrorBasic_ToStringReturnsMessage()
+        {
+            var error = new Error("Generic error",Option<IError>.None);
+
+            error.Message.Should().Be("Generic error").And.Be(error.ToString());
+        }
+
+        [Test]
+        public void ErrorWithKindType_ToStringReturnsMessage()
+        {
+            var error = new Error<SampleErrorKind>("Item 1 does not exist", SampleErrorKind.ItemDoesNotExist, Option<IError>.None);
+            
+            error.Message.Should().Be("Item 1 does not exist").And.Be(error.ToString());
+        }
+
+        
+        [Test]
+        public void ErrorWithKindAndExceptionType_ToStringReturnsMessage()
+        {
+            var error = new Error<SampleErrorKind, Exception>("Item 1 does not exist", SampleErrorKind.ItemDoesNotExist,
+                Option<IError>.None);
+            
+            error.Message.Should().Be("Item 1 does not exist").And.Be(error.ToString());
         }
 
         [Test]

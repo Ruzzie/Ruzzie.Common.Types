@@ -83,6 +83,11 @@ namespace Ruzzie.Common.Types
         {
             return !left.Equals(right);
         }
+
+        public override string ToString()
+        {
+            return Message;
+        }
     }
 
     [DebuggerDisplay("{" + nameof(ErrorKind) + "}:{"+nameof(Message)+"}")]
@@ -114,6 +119,11 @@ namespace Ruzzie.Common.Types
 
         public TKind ErrorKind { get; }
         public Option<IError> Source { get; }
+
+        public override string ToString()
+        {
+            return Message;
+        }
     }
 
     public class Error<TKind, TException> : IError<TKind>, IHasExceptionSource<TException> where TException : Exception where TKind: Enum
@@ -161,5 +171,10 @@ namespace Ruzzie.Common.Types
         public TKind ErrorKind { get; }
         public Option<IError> Source { get; }
         public Option<TException> ExceptionSource { get; }
+
+        public override string ToString()
+        {
+            return Message;
+        }
     }
 }

@@ -18,7 +18,7 @@ namespace Ruzzie.Common.Types
         }
 
         /// <summary>
-        /// Unwraps a result, yielding the content of an Ok.
+        /// Unwraps a result, yielding the content of an Ok. When Error throws an exception.
         /// </summary>
         /// <exception>Panics if the value is an Err, with a panic message provided by the Errs value.</exception>
         public static T Unwrap<TError, T>(this Result<TError, T> self)
