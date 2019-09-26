@@ -98,6 +98,7 @@ namespace Ruzzie.Common.Types
                 case Status.Left:
                     return onLeft(_leftValue);
                 default:
+                // ReSharper disable once RedundantCaseLabel
                 case Status.IsDefaultValue:
                     throw new EitherIsDefaultValueException(
                         $"Cannot perform {nameof(Match)}. The current {nameof(Either<TLeft, TRight>)} is initialized as default. It has neither a Left or a Right value.");
@@ -120,6 +121,7 @@ namespace Ruzzie.Common.Types
                 case Status.Left:
                     return onLeft(_leftValue);
                 default:
+                // ReSharper disable once RedundantCaseLabel
                 case Status.IsDefaultValue:
                     return Option<T>.None;
             }
@@ -139,6 +141,7 @@ namespace Ruzzie.Common.Types
                     return _rightValue;
                 case Status.Left:
                     return selector(_leftValue);
+                // ReSharper disable once RedundantCaseLabel
                 case Status.IsDefaultValue:
                 default:
                     return default;
@@ -159,6 +162,7 @@ namespace Ruzzie.Common.Types
                     return selector(_rightValue);
                 case Status.Left:
                     return _leftValue;
+                // ReSharper disable once RedundantCaseLabel
                 case Status.IsDefaultValue:
                 default:
                     return default;
@@ -183,6 +187,7 @@ namespace Ruzzie.Common.Types
                     return new Either<TLeftResult, TRightResult>(selectRight(_rightValue));
                 case Status.Left:
                     return new Either<TLeftResult, TRightResult>(selectLeft(_leftValue));
+                // ReSharper disable once RedundantCaseLabel
                 case Status.IsDefaultValue:
                 default:
                     return default;
