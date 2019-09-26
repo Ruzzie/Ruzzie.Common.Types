@@ -30,6 +30,13 @@ namespace Ruzzie.Common.Types.UnitTests
         }
 
         [Test]
+        public void ForExample()
+        {
+            var x = Option.Some("cars");
+            x.For(() => Assert.Fail("should be some."), val => Assert.AreEqual("cars", val));
+        }
+
+        [Test]
         public void MapOrExample()
         {
             var x = Option.Some("foo");

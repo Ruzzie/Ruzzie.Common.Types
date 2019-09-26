@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 
 namespace Ruzzie.Common.Types
@@ -26,7 +27,7 @@ namespace Ruzzie.Common.Types
         public static readonly Option<TValue> None = new Option<TValue>(Unit.Void);
         private readonly OptionVariant _variant;
         private readonly TValue _value;
-        private const string VariantFieldName = "variant";
+        private const string HasValueFieldName = "hasValue";
         private const string ValueFieldName = "value";
 
         public static Option<TValue> Some(in TValue value)
@@ -72,6 +73,20 @@ namespace Ruzzie.Common.Types
 
             return Option<TResult>.None;
         }
+
+        /// Experimental For method. Alternative to Match with Void return type.
+        public void For(Action onNone, Action<TValue> onSome)
+        {
+            if (IsSome())
+            {
+                onSome(_value);
+            }
+            else
+            {
+                onNone();
+            }
+        }
+
         ///<summary>
         ///Returns the contained value or a default.
         ///</summary>
@@ -87,11 +102,13 @@ namespace Ruzzie.Common.Types
             return IsSome() ? _value : orElse();
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool IsNone()
         {
             return _variant == OptionVariant.None;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool IsSome()
         {
             return _variant == OptionVariant.Some;
@@ -124,17 +141,17 @@ namespace Ruzzie.Common.Types
         //Serialize
         public void GetObjectData(SerializationInfo info, StreamingContext context)
         {
-            info.AddValue(VariantFieldName, (byte) _variant);
+            info.AddValue(HasValueFieldName, _variant == OptionVariant.Some);
             if (IsSome())
             {
-                info.AddValue(ValueFieldName, _value);
+                info.AddValue(ValueFieldName, _value, typeof(TValue));
             }
         }
 
         //Deserialize
         private Option(SerializationInfo serializationInfo, StreamingContext streamingContext)
         {
-            _variant = (OptionVariant) serializationInfo.GetByte(VariantFieldName);
+            _variant = serializationInfo.GetBoolean(HasValueFieldName) ? OptionVariant.Some : OptionVariant.None;
             if (_variant == OptionVariant.Some)
             {
                 _value = (TValue) serializationInfo.GetValue(ValueFieldName, typeof(TValue));
