@@ -45,12 +45,26 @@ namespace Ruzzie.Common.Types.UnitTests
         }
 
         [Test]
+        public void ForOk()
+        {
+            var sut = new Result<string, int>(42);
+            sut.For(s => Assert.Fail(s), i => Assert.AreEqual(42, i));
+        }
+
+        [Test]
+        public void ForErr()
+        {
+            var sut = new Result<string, int>("foo");
+            sut.For(s => Assert.AreEqual("foo", s), i => Assert.Fail("Err expected"));
+        }
+
+        [Test]
         public void DefaultIsErr()
         {
             Result<object, object> res = default;
             //Is is an error, however the Exception type is initialized to default
             //When we try to consume that err value it is null, this results in a runtime exception.
-            Assert.Throws<PanicException<object>>(() => res.Err().Match(n => n.ToString(), s => s.ToString()));
+            Assert.Throws<PanicException<object>>(() => res.Err().Match(() => "Err", s => s.ToString()));
         }
 
         [Test]

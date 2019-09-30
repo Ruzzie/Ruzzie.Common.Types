@@ -19,6 +19,12 @@ namespace Ruzzie.Common.Types
         /// <param name="onRight">Calls this when the type is right.</param>
         /// <returns></returns>
         T Match<T>(Func<TLeft, T> onLeft, Func<TRight, T> onRight);
+
+        /// <summary>
+        /// Alternative to Match with Void return type.
+        /// </summary>
+        /// <remarks> Experimental For method. </remarks>
+        void For(Action<TLeft> onLeft, Action<TRight> onRight);
     }
 
     /// <summary>
@@ -85,6 +91,12 @@ namespace Ruzzie.Common.Types
         /// The result of the conversion.
         /// </returns>
         public static implicit operator Either<TLeft, TRight>(in TRight value) => new Either<TLeft, TRight>(value);
+
+        /// <inheritdoc />
+        public void For(Action<TLeft> onLeft, Action<TRight> onRight)
+        {
+
+        }
 
         ///<inheritdoc />
         /// <exception cref="EitherIsDefaultValueException">When Either is not initialized (created with default(T)) the exception will be thrown.</exception>

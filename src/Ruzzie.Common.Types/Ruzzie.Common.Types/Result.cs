@@ -265,6 +265,19 @@ namespace Ruzzie.Common.Types
             return IsOk ? onOk(_value) : onErr(ErrValue);
         }
 
+        /// <inheritdoc />
+        public void For(Action<TError> onErr, Action<T> onOk)
+        {
+            if (IsOk)
+            {
+                onOk(_value);
+            }
+            else
+            {
+                onErr(ErrValue);
+            }
+        }
+
         /// <inheritdoc cref="IEither{TLeft,TRight}" />
         public Result<TF, TU> Map<TF, TU>(Func<TError, TF> selectErr, Func<T, TU> selectOk)
         {

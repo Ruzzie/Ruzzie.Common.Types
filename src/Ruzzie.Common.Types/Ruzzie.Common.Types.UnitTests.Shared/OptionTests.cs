@@ -13,7 +13,7 @@ namespace Ruzzie.Common.Types.UnitTests
             //Arrange
             var option = Option<string>.Some("Hello!");
             //Act
-            string value = option.Match(x => "No value!", val => val);
+            string value = option.Match(() => "No value!", val => val);
             //Assert
             value.Should().Be("Hello!");
         }
@@ -24,7 +24,7 @@ namespace Ruzzie.Common.Types.UnitTests
             //Arrange
             var option = Option<string>.None;
             //Act
-            string value = option.Match( x => "No value!",val => val);
+            string value = option.Match( ()=> "No value!",val => val);
             //Assert
             value.Should().Be("No value!");
         }

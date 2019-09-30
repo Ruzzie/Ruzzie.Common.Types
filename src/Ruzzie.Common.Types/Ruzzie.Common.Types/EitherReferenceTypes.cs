@@ -25,11 +25,19 @@ namespace Ruzzie.Common.Types
             _value = value;
         }
 
+        /// <inheritdoc />
+        public void For(Action<TLeft> onLeft, Action<TRight> onRight)
+        {
+            onLeft(_value);
+        }
+
+        /// <inheritdoc />
         public T Match<T>(Func<TLeft, T> onLeft, Func<TRight, T> onRight)
         {
             return onLeft(_value);
         }
 
+        /// <inheritdoc />
         public IEitherReferenceType<TLeftResult, TRightResult> Map<TLeftResult, TRightResult>(Func<TLeft, TLeftResult> selectLeft, Func<TRight, TRightResult> selectRight)
         {
 
@@ -87,11 +95,19 @@ namespace Ruzzie.Common.Types
             _value = value;
         }
 
+        /// <inheritdoc />
+        public void For(Action<TLeft> onLeft, Action<TRight> onRight)
+        {
+            onRight(_value);
+        }
+
+        /// <inheritdoc />
         public T Match<T>(Func<TLeft, T> onLeft, Func<TRight, T> onRight)
         {
             return onRight(_value);
         }
 
+        /// <inheritdoc />
         public IEitherReferenceType<TLeftResult, TRightResult> Map<TLeftResult, TRightResult>(Func<TLeft, TLeftResult> selectLeft, Func<TRight, TRightResult> selectRight)
         {
             return new Right<TLeftResult, TRightResult>(selectRight(_value));

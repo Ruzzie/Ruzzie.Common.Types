@@ -25,6 +25,20 @@ namespace Ruzzie.Common.Types.UnitTests
         }
 
         [Test]
+        public void ForRight()
+        {
+            var sut = new Right<string, int>(42);
+            sut.For(s => Assert.Fail(s), i => Assert.AreEqual("42", i.ToString()));
+        }
+
+        [Test]
+        public void ForLeft()
+        {
+            var sut = new Left<string, int>("foo");
+            sut.For(s => Assert.AreEqual("foo", s), i => Assert.Fail(i.ToString()));
+        }
+
+        [Test]
         public void OpInEquality()
         {
             object leftEither = LeftRightExtensions.AsLeft<int, string>(12);

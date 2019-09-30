@@ -54,7 +54,7 @@ namespace Ruzzie.Common.Types
         // ReSharper disable once UnusedParameter.Global
         public static implicit operator Option<TValue>(in Unit _) => new Option<TValue>(Unit.Void);
 
-        public T Match<T>(Func<Unit, T> onNone, Func<TValue, T> onSome)
+        T IEither<Unit, TValue>.Match<T>(Func<Unit, T> onNone, Func<TValue, T> onSome)
         {
             return _variant == OptionVariant.None ? onNone(Unit.Void) : onSome(_value);
         }
@@ -85,6 +85,12 @@ namespace Ruzzie.Common.Types
             {
                 onNone();
             }
+        }
+
+        /// <inheritdoc />
+        void IEither<Unit, TValue>.For(Action<Unit> onNone, Action<TValue> onSome)
+        {
+            For(() => onNone(Unit.Void), onSome);
         }
 
         ///<summary>
