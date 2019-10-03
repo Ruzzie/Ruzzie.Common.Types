@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using FluentAssertions;
 using NUnit.Framework;
 
@@ -27,6 +28,37 @@ namespace Ruzzie.Common.Types.UnitTests
             string value = option.Match( ()=> "No value!",val => val);
             //Assert
             value.Should().Be("No value!");
+        }
+
+        [Test]
+        public void WhenSomeToStringCallsToStringOfValue_int()
+        {
+            var option = Option<int>.Some(1);
+
+            string value = option.ToString();
+
+            value.Should().Be(1.ToString());
+        }
+
+        [Test]
+        public void WhenNoneToStringReturnsEmpty_int()
+        {
+            var option = Option<int>.None;
+
+            string value = option.ToString();
+
+            value.Should().Be(string.Empty);
+        }
+
+        [Test]
+        public void WhenSomeToStringCallsToStringOfValue_double()
+        {
+            var option = Option<double>.Some(1.00d);
+
+            string value = option.ToString("F2", CultureInfo.InvariantCulture);
+
+            // ReSharper disable once SpecifyACultureInStringConversionExplicitly
+            value.Should().Be(1d.ToString("F2", CultureInfo.InvariantCulture));
         }
 
         [Test]

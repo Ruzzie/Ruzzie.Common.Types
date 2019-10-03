@@ -22,7 +22,7 @@ namespace Ruzzie.Common.Types
 
     [Serializable]
     [DebuggerDisplay("{"+nameof(_variant) + "}, {"+nameof(_value) + "}")]
-    public readonly struct Option<TValue> : IOption<TValue>, IEquatable<Option<TValue>>, ISerializable
+    public readonly struct Option<TValue> : IOption<TValue>, IEquatable<Option<TValue>>, ISerializable, IFormattable
     {
         public static readonly Option<TValue> None = new Option<TValue>(Unit.Void);
         private readonly OptionVariant _variant;
@@ -142,6 +142,31 @@ namespace Ruzzie.Common.Types
             }
 
             return Unit.Void.GetHashCode();
+        }
+
+        public string ToString(string format, IFormatProvider formatProvider)
+        {
+            if (IsNone())
+            {
+                return string.Empty;
+            }
+
+            if (_value is IFormattable formattable)
+            {
+                return formattable.ToString(format, formatProvider);
+            }
+
+            return string.Format(formatProvider, format);
+        }
+
+        public override string ToString()
+        {
+            if (IsNone())
+            {
+                return string.Empty;
+            }
+
+            return _value.ToString();
         }
 
         //Serialize
