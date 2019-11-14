@@ -64,6 +64,9 @@ namespace Ruzzie.Common.Types
             return _variant == OptionVariant.None ? onNone() : onSome(_value);
         }
 
+        /// <summary>
+        /// Maps an <see cref="Option{TValue}"/> <see cref="IOption{TResult}"/> by applying a function to the value. The function will only be applied when there is a value. None is returned otherwise.
+        /// </summary>
         public IOption<TResult> Map<TResult>(Func<TValue, TResult> selector)
         {
             if (IsSome())
@@ -74,7 +77,9 @@ namespace Ruzzie.Common.Types
             return Option<TResult>.None;
         }
 
+        /// <summary>
         /// Experimental For method. Alternative to Match with Void return type.
+        /// </summary>
         public void For(Action onNone, Action<TValue> onSome)
         {
             if (IsSome())

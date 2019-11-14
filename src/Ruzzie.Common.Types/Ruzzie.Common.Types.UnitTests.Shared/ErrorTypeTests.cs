@@ -30,8 +30,8 @@ namespace Ruzzie.Common.Types.UnitTests
             error.ExceptionSource.UnwrapOr(new Exception())
                 .Should().BeOfType<FormatException>()
                 .Which.Message.Should()
-                .Be(
-                    "The input is not a valid Base-64 string as it contains a non-base 64 character, more than two padding characters, or an illegal character among the padding characters. ");
+                .StartWith(
+                    "The input is not a valid Base-64 string as it contains a non-base 64 character, more than two padding characters, or an illegal character among the padding characters.");
 
             static Result<Error, string> CreateStringFromBase64BasedKey(string base64Input)
             {
@@ -110,7 +110,7 @@ namespace Ruzzie.Common.Types.UnitTests
         [Test]
         public void CustomErrorExample()
         {
-            CreateCustomErrorResult().ExpectError("should be error");
+            CreateCustomErrorResult().ExpectError("I should be an error");
         }
 
         static Result<CustomError, int> CreateCustomErrorResult()
@@ -130,19 +130,19 @@ namespace Ruzzie.Common.Types.UnitTests
             }
         }
 
+        public enum SampleErrorKind
+        {
+            Unknown,
+            ItemDoesNotExist,
+            InvalidOptions
+        }
+
         [Test]
         public void CustomErrorTypeAliasExample()
         {
             var error = new CustomErrorTypeAlias(SampleErrorKind.Unknown);
 
             error.ErrorKind.Should().Be(SampleErrorKind.Unknown);
-        }
-
-        public enum SampleErrorKind
-        {
-            Unknown,
-            ItemDoesNotExist,
-            InvalidOptions
         }
     }
 }

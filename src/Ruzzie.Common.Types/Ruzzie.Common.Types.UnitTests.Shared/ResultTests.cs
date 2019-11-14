@@ -31,16 +31,16 @@ namespace Ruzzie.Common.Types.UnitTests
         [Test]
         public void MatchOk()
         {
-            var sut = new Result<string, int>(42);
-            var actual = sut.Match(s => s, i => i.ToString());
+            var result = new Result<string, int>(ok: 42);
+            var actual = result.Match(onErr: s => s, onOk: i => i.ToString());
             Assert.AreEqual("42", actual);
         }
 
         [Test]
         public void MatchErr()
         {
-            var sut = new Result<string, int>("foo");
-            var actual = sut.Match(s => s, i => i.ToString());
+            var result = new Result<string, int>(err: "foo");
+            var actual = result.Match(onErr: s => s, onOk: i => i.ToString());
             Assert.AreEqual("foo", actual);
         }
 

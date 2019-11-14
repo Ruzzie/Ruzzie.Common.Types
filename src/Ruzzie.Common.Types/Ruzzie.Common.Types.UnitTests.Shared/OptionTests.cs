@@ -9,13 +9,12 @@ namespace Ruzzie.Common.Types.UnitTests
     public class OptionTests
     {
         [Test]
-        public void HasSomeSmokeTest()
+        public void MatchExample()
         {
-            //Arrange
             var option = Option<string>.Some("Hello!");
-            //Act
-            string value = option.Match(() => "No value!", val => val);
-            //Assert
+
+            string value = option.Match(onNone: () => "No value!", onSome: val => val);
+            
             value.Should().Be("Hello!");
         }
 
