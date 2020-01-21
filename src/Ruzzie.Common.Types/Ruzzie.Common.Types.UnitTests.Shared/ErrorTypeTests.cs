@@ -26,12 +26,10 @@ namespace Ruzzie.Common.Types.UnitTests
             var inputString = "\\asd23+++---";
 
             var error = CreateStringFromBase64BasedKey(inputString).ExpectError("Should be Err");
-
+            
             error.ExceptionSource.UnwrapOr(new Exception())
                 .Should().BeOfType<FormatException>()
-                .Which.Message.Should()
-                .StartWith(
-                    "The input is not a valid Base-64 string as it contains a non-base 64 character, more than two padding characters, or an illegal character among the padding characters.");
+                .Which.Message.Should().NotBeNullOrWhiteSpace();
 
             static Result<Error, string> CreateStringFromBase64BasedKey(string base64Input)
             {
