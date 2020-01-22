@@ -5,7 +5,6 @@ using System.Runtime.Serialization;
 
 namespace Ruzzie.Common.Types
 {
-
     public static class Option
     {
         public static Option<TValue> Some<TValue>(in TValue value)
@@ -17,7 +16,6 @@ namespace Ruzzie.Common.Types
         {
             return Option<TValue>.None;
         }
-        
     }
 
     [Serializable]
@@ -67,7 +65,15 @@ namespace Ruzzie.Common.Types
         /// <summary>
         /// Maps an <see cref="Option{TValue}"/> <see cref="IOption{TResult}"/> by applying a function to the value. The function will only be applied when there is a value. None is returned otherwise.
         /// </summary>
-        public IOption<TResult> Map<TResult>(Func<TValue, TResult> selector)
+        IOption<TResult> IOption<TValue>.Map<TResult>(Func<TValue, TResult> selector)
+        {
+            return Map(selector);
+        }
+
+        /// <summary>
+        /// Maps an <see cref="Option{TValue}"/> <see cref="IOption{TResult}"/> by applying a function to the value. The function will only be applied when there is a value. None is returned otherwise.
+        /// </summary>
+        public Option<TResult> Map<TResult>(Func<TValue, TResult> selector)
         {
             if (IsSome())
             {
