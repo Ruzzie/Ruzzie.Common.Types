@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using FluentAssertions;
 using NUnit.Framework;
@@ -16,6 +17,18 @@ namespace Ruzzie.Common.Types.UnitTests
             string value = option.Match(onNone: () => "No value!", onSome: val => val);
             
             value.Should().Be("Hello!");
+        }
+
+        [Test]
+        public void UsageExample()
+        {
+            var dictionary = new Dictionary<string, Option<string>>();
+            dictionary["Default"] = Option<string>.None;
+            dictionary["Water"] = Option<string>.Some("Wet");
+            dictionary["Wet"] = Option<string>.Some("Swimming");
+
+            var firstDescr = dictionary["Water"];
+            var m = firstDescr.Match(() => dictionary["Default"], s => dictionary[s]);
         }
 
         [Test]
