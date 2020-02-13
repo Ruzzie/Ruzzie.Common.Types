@@ -10,6 +10,16 @@ namespace Ruzzie.Common.Types.UnitTests
     public class OptionTests
     {
         [Test]
+        public void Pass_InParamFunc_ToMatch()
+        {
+            var option = new Option<int>(20);
+
+            var value = option.Match(() => false, (in int ok) => true);
+
+            value.Should().BeTrue();
+        }
+
+        [Test]
         public void MatchExample()
         {
             var option = Option<string>.Some("Hello!");

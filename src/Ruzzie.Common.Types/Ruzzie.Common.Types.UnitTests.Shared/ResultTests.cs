@@ -9,6 +9,14 @@ namespace Ruzzie.Common.Types.UnitTests
     public class ResultTests
     {
         [Test]
+        public void Pass_InParamFunc_ToMatch()
+        {
+            var result = new Result<int, double>(2.2);
+
+            result.Match((in int err) => true, (in double ok) => false);
+        }
+
+        [Test]
         public void Cannot_InferTypesWhenTypesAreTheSame_Ok()
         {
             //so use named parameter to indicate result type

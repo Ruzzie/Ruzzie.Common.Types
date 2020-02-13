@@ -27,6 +27,9 @@ namespace Ruzzie.Common.Types
         }
     }
 
+    public delegate TU OnErr<out TU, TError>(in TError err);
+    public delegate TU OnOk<out TU, T>(in T ok);
+
     public interface IResult<TError, T>
     {
         /// <summary>
@@ -52,8 +55,16 @@ namespace Ruzzie.Common.Types
         Option<TError> Err();
        
         TU Match<TU>(Func<TError, TU> onErr, Func<T, TU> onOk);
-        
 
+        /// <summary>
+        ///  Control flow based on pattern matching.
+        /// </summary>
+        /// <typeparam name="TU">The output type of the match.</typeparam>
+        /// <param name="onErr">Calls this when the type is Err.</param>
+        /// <param name="onOk">Calls this when the type is right.</param>
+        /// <returns></returns>
+        TU Match<TU>(OnErr<TU, TError> onErr, OnOk<TU, T> onOk);
+        
         /// <summary>
         ///Maps a Result{TErr,T} to Result{TErr,TU} by applying a function to a contained Ok value, leaving an Err value untouched.
         ///  This function can be used to compose the results of two functions.
@@ -230,7 +241,6 @@ namespace Ruzzie.Common.Types
             return obj is Result<TError, T> other && Equals(other);
         }
 
-
         /// <summary>
         /// Returns a hash code for this instance. When the result is <see cref="ResultVariant.Ok"/> this returns the hashcode of the {T} type value. When the result is <see cref="ResultVariant.Err"/> this returns the hashcode of the {TError} type value.
         /// When not initialized this returns 0.
@@ -248,7 +258,6 @@ namespace Ruzzie.Common.Types
             return IsOk ? _value?.GetHashCode() ?? 0 : _err?.GetHashCode() ?? 0;
         }
 
-
         public static bool operator ==(Result<TError, T> left, Result<TError, T> right)
         {
             return left.Equals(right);
@@ -261,6 +270,12 @@ namespace Ruzzie.Common.Types
 
         /// <inheritdoc cref="IEither{TLeft,TRight}" />
         public TU Match<TU>(Func<TError, TU> onErr, Func<T, TU> onOk)
+        {
+            return IsOk ? onOk(_value) : onErr(ErrValue);
+        }
+
+        /// <inheritdoc/>
+        public TU Match<TU>(OnErr<TU, TError> onErr, OnOk<TU, T> onOk)
         {
             return IsOk ? onOk(_value) : onErr(ErrValue);
         }

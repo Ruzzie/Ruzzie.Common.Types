@@ -5,6 +5,10 @@ using System.Runtime.Serialization;
 
 namespace Ruzzie.Common.Types
 {
+    public delegate TU OnNone<out TU>();
+
+    public delegate TU OnSome<out TU, T>(in T some);
+
     public static class Option
     {
         public static Option<TValue> Some<TValue>(in TValue value)
@@ -58,6 +62,11 @@ namespace Ruzzie.Common.Types
         }
 
         public T Match<T>(Func<T> onNone, Func<TValue, T> onSome)
+        {
+            return _variant == OptionVariant.None ? onNone() : onSome(_value);
+        }
+
+        public T Match<T>(OnNone<T> onNone, OnSome<T, TValue> onSome)
         {
             return _variant == OptionVariant.None ? onNone() : onSome(_value);
         }

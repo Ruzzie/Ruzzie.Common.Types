@@ -4,6 +4,10 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Ruzzie.Common.Types
 {
+    public delegate T OnLeft<out T, TLeft>(in TLeft left);
+
+    public delegate T OnRight<out T, TRight>(in TRight right);
+
     /// <summary>
     /// Basic interface for Either types
     /// </summary>
