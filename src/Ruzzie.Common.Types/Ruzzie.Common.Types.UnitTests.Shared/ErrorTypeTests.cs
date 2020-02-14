@@ -100,6 +100,41 @@ namespace Ruzzie.Common.Types.UnitTests
            result.ExpectError("should be error");
         }
 
+        [Test]
+        public void ErrWithKindSample()
+        {
+            var result = GiveError();
+
+            var msg = result.Match(
+                (in Err<SampleErrorKind> err) => $"{err.ErrorKind}",
+                (in string ok) => ok);
+
+            msg.Should().Be("Unknown");
+
+            Result<Err<SampleErrorKind>, string> GiveError()
+            {
+                return new Err<SampleErrorKind>(SampleErrorKind.Unknown);
+            }
+        }
+
+        [Test]
+        public void ErrWithKindAndExceptionSample()
+        {
+            var result = GiveError();
+
+            var msg = result.Match(
+                (in Err<SampleErrorKind, Exception> err) =>
+                    $"{err.ErrorKind} - {err.ExceptionSource.Match(() => string.Empty, exception => exception.Message)}",
+                (in string ok) => ok);
+
+            msg.Should().Be("Unknown - Test");
+
+            Result<Err<SampleErrorKind, Exception>, string> GiveError()
+            {
+                return new Err<SampleErrorKind, Exception>(SampleErrorKind.Unknown, new Exception("Test"));
+            }
+        }
+
         static Result<Error<SampleErrorKind, Exception>, string> CreateErrorResult()
         {
             return new Error<SampleErrorKind, Exception>("Error!", SampleErrorKind.Unknown, new Exception("exception"));

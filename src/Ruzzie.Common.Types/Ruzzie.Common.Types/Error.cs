@@ -1,9 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 
 namespace Ruzzie.Common.Types
 {
-
     public interface IHasExceptionSource<TException> where TException : Exception
     {
         Option<TException> ExceptionSource { get; }
@@ -126,6 +126,7 @@ namespace Ruzzie.Common.Types
         }
     }
 
+    [DebuggerDisplay("{" + nameof(ErrorKind) + "}:{"+nameof(Message)+"}")]
     public class Error<TKind, TException> : IError<TKind>, IHasExceptionSource<TException> where TException : Exception where TKind: Enum
     {
         public Error(TKind errorKind,  Option<IError> source) : this(Enum.Format(typeof(TKind), errorKind, "d"), errorKind, source)
@@ -175,6 +176,164 @@ namespace Ruzzie.Common.Types
         public override string ToString()
         {
             return Message;
+        }
+    }
+
+    [DebuggerDisplay("{" + nameof(ErrorKind) + "}:{" + nameof(Message) + "}")]
+    public readonly struct Err<TKind> : IError<TKind>, IEquatable<Err<TKind>> where TKind : Enum
+    {
+        public string Message { get; }
+        public Option<IError> Source { get; }
+        public TKind ErrorKind { get; }
+
+        public Err(in TKind errorKind) : this(Enum.Format(typeof(TKind), errorKind, "d"), errorKind)
+        {
+
+        }
+
+        public Err(in TKind errorKind, in Option<IError> source) : this(Enum.Format(typeof(TKind), errorKind, "d"),
+            errorKind, source)
+        {
+
+        }
+
+        public Err(in string message, in TKind errorKind) : this(message, errorKind, Option<IError>.None)
+        {
+
+        }
+
+        public Err(in string message, in TKind errorKind, in Option<IError> source)
+        {
+            Message   = message;
+            ErrorKind = errorKind;
+            Source    = source;
+        }
+
+        public override string ToString()
+        {
+            return Message;
+        }
+
+        public bool Equals(Err<TKind> other)
+        {
+            return Message == other.Message && Source.Equals(other.Source) && EqualityComparer<TKind>.Default.Equals(ErrorKind, other.ErrorKind);
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is Err<TKind> other && Equals(other);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var hashCode = Message.GetHashCode();
+                hashCode = (hashCode * 397) ^ Source.GetHashCode();
+                hashCode = (hashCode * 397) ^ EqualityComparer<TKind>.Default.GetHashCode(ErrorKind);
+                return hashCode;
+            }
+        }
+
+        public static bool operator ==(Err<TKind> left, Err<TKind> right)
+        {
+            return left.Equals(right);
+        }
+
+        public static bool operator !=(Err<TKind> left, Err<TKind> right)
+        {
+            return !left.Equals(right);
+        }
+    }
+
+    [DebuggerDisplay("{" + nameof(ErrorKind) + "}:{"+nameof(Message)+"}")]
+    public readonly struct Err<TKind, TException> : IError<TKind>, IHasExceptionSource<TException>, IEquatable<Err<TKind, TException>> where TException : Exception where TKind : Enum
+    {
+        public string Message { get; }
+        public Option<IError> Source { get; }
+        public TKind ErrorKind { get; }
+        public Option<TException> ExceptionSource { get; }
+
+        public Err(in TKind errorKind, in Option<IError> source) : this(Enum.Format(typeof(TKind), errorKind, "d"),
+            errorKind, source)
+        {
+
+        }
+
+        public Err(in TKind errorKind, in Option<TException> exceptionSource) : this(
+            Enum.Format(typeof(TKind), errorKind, "d"), errorKind, exceptionSource)
+        {
+
+        }
+
+        public Err(in TKind errorKind) : this(Enum.Format(typeof(TKind), errorKind, "d"), errorKind)
+        {
+
+        }
+
+        public Err(in string message, in TKind errorKind, in Option<TException> exceptionSource) : this(message,
+            errorKind, Option<IError>.None, exceptionSource)
+        {
+
+        }
+
+        public Err(in string message, in TKind errorKind, in Option<IError> source) : this(message, errorKind, source,
+            Option<TException>.None)
+        {
+
+        }
+
+        public Err(in string message, in TKind errorKind) : this(message, errorKind, Option<IError>.None,
+            Option<TException>.None)
+        {
+        }
+
+        public Err(in string             message,
+                   in TKind              errorKind,
+                   in Option<IError>     source,
+                   in Option<TException> exceptionSource)
+        {
+            Message         = message;
+            ErrorKind       = errorKind;
+            Source          = source;
+            ExceptionSource = exceptionSource;
+        }
+
+        public override string ToString()
+        {
+            return Message;
+        }
+
+        public bool Equals(Err<TKind, TException> other)
+        {
+            return Message == other.Message && Source.Equals(other.Source) && EqualityComparer<TKind>.Default.Equals(ErrorKind, other.ErrorKind) && ExceptionSource.Equals(other.ExceptionSource);
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is Err<TKind, TException> other && Equals(other);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var hashCode = Message.GetHashCode();
+                hashCode = (hashCode * 397) ^ Source.GetHashCode();
+                hashCode = (hashCode * 397) ^ EqualityComparer<TKind>.Default.GetHashCode(ErrorKind);
+                hashCode = (hashCode * 397) ^ ExceptionSource.GetHashCode();
+                return hashCode;
+            }
+        }
+
+        public static bool operator ==(Err<TKind, TException> left, Err<TKind, TException> right)
+        {
+            return left.Equals(right);
+        }
+
+        public static bool operator !=(Err<TKind, TException> left, Err<TKind, TException> right)
+        {
+            return !left.Equals(right);
         }
     }
 }
