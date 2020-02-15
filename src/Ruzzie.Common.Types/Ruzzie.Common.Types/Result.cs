@@ -337,6 +337,15 @@ namespace Ruzzie.Common.Types
         }
 
         /// <summary>
+        ///Calls op if the result is Ok, otherwise returns the Err value of self.
+        ///This function can be used for control flow based on Result values.
+        /// </summary>
+        public Result<TError, TU> AndThen<TU>(OnOk<Result<TError, TU>, T> op)
+        {
+            return IsOk ? op(_value) : Result<TError, TU>.Err(ErrValue);
+        }
+
+        /// <summary>
         ///Returns res if the result is Err, otherwise returns the Ok value of self.
         ///    Arguments passed to or are eagerly evaluated; if you are passing the result of a function call, it is recommended to use or_else, which is lazily evaluated.
         /// </summary>
@@ -346,10 +355,28 @@ namespace Ruzzie.Common.Types
         }
 
         /// <summary>
+        ///Returns res if the result is Err, otherwise returns the Ok value of self.
+        ///    Arguments passed to or are eagerly evaluated; if you are passing the result of a function call, it is recommended to use or_else, which is lazily evaluated.
+        /// </summary>
+        public Result<TF, T> Or<TF>(in Result<TF, T> result)
+        {
+            return IsOk ? Result<TF, T>.Ok(_value) : result;
+        }
+
+        /// <summary>
         ///Calls op if the result is Err, otherwise returns the Ok value of self.
         ///    This function can be used for control flow based on result values.
         /// </summary>
         public Result<TF, T> OrElse<TF>(Func<TError, Result<TF, T>> op)
+        {
+            return IsOk ? Result<TF, T>.Ok(_value) : op(ErrValue);
+        }
+
+        /// <summary>
+        ///Calls op if the result is Err, otherwise returns the Ok value of self.
+        ///    This function can be used for control flow based on result values.
+        /// </summary>
+        public Result<TF, T> OrElse<TF>(OnErr<Result<TF, T> , TError> op)
         {
             return IsOk ? Result<TF, T>.Ok(_value) : op(ErrValue);
         }
@@ -368,6 +395,15 @@ namespace Ruzzie.Common.Types
         ///Unwraps a result, yielding the content of an Ok. If the value is an Err then it calls op with its value.
         /// </summary>
         public T UnwrapOrElse(Func<TError, T> op)
+        {
+            //Could use match function, but I assume this is faster.
+            return IsOk ? _value : op(ErrValue);
+        }
+
+        /// <summary>
+        ///Unwraps a result, yielding the content of an Ok. If the value is an Err then it calls op with its value.
+        /// </summary>
+        public T UnwrapOrElse(OnErr<T, TError> op)
         {
             //Could use match function, but I assume this is faster.
             return IsOk ? _value : op(ErrValue);

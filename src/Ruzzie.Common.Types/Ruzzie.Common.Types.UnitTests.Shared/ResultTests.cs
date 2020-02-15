@@ -132,11 +132,31 @@ namespace Ruzzie.Common.Types.UnitTests
         }
 
         [Test]
+        public void AndThen_In_Example()
+        {
+            Result<uint, uint> sq(in uint  x) => Result.Ok<uint, uint>(x * x);
+            Result<uint, uint> err(in uint x) => Result.Err<uint, uint>(x);
+
+            Assert.AreEqual(Result.Ok<uint, uint>(2).AndThen(sq).AndThen(sq), Result.Ok<uint, uint>(16));
+            Assert.AreEqual(Result.Ok<uint, uint>(2).AndThen(sq).AndThen(err), Result.Err<uint, uint>(4));
+            Assert.AreEqual(Result.Ok<uint, uint>(2).AndThen(err).AndThen(sq), Result.Err<uint, uint>(2));
+            Assert.AreEqual(Result.Err<uint, uint>(3).AndThen(sq).AndThen(sq), Result.Err<uint, uint>(3));
+        }
+
+        [Test]
         public void OrExample_One()
         {
             var x = Result.Ok<string, uint>(2);
             var y = Result.Err<string, uint>("late error");
             Assert.AreEqual(x.Or(y), Result.Ok<string, uint>(2));
+        }
+
+        [Test]
+        public void OrExample_In_One()
+        {
+            var x = Result.Ok<string, uint>(2);
+            var y = Result.Err<string, uint>("late error");
+            Assert.AreEqual(x.Or(in y), Result.Ok<string, uint>(2));
         }
 
         [Test]
@@ -148,6 +168,14 @@ namespace Ruzzie.Common.Types.UnitTests
         }
 
         [Test]
+        public void OrExample_In_Two()
+        {
+            var x = Result.Err<string, uint>("early error");
+            var y = Result.Ok<string, uint>(2);
+            Assert.AreEqual(x.Or(in y), Result.Ok<string, uint>(2));
+        }
+
+        [Test]
         public void OrExample_Three()
         {
             var x = Result.Err<string, uint>("not a 2");
@@ -156,11 +184,27 @@ namespace Ruzzie.Common.Types.UnitTests
         }
 
         [Test]
+        public void OrExample_In_Three()
+        {
+            var x = Result.Err<string, uint>("not a 2");
+            var y = Result.Err<string, uint>("late error");
+            Assert.AreEqual(x.Or(in y), Result.Err<string, uint>("late error"));
+        }
+
+        [Test]
         public void OrExample_Four()
         {
             var x = Result.Ok<string, uint>(2);
             var y = Result.Ok<string, uint>(100);
             Assert.AreEqual(x.Or(y), Result.Ok<string, uint>(2));
+        }
+
+        [Test]
+        public void OrExample_In_Four()
+        {
+            var x = Result.Ok<string, uint>(2);
+            var y = Result.Ok<string, uint>(100);
+            Assert.AreEqual(x.Or(in y), Result.Ok<string, uint>(2));
         }
 
         [Test]
