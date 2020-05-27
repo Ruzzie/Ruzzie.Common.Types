@@ -40,7 +40,7 @@ namespace Ruzzie.Common.Types
     public interface IEitherValueType<out TLeft, out TRight>: IEither<TLeft,TRight>
     {
        // T Match<T>(Func<TLeft, T> onLeft, Func<TRight, T> onRight);
-        
+
     }
 
     /// <summary>
@@ -99,7 +99,20 @@ namespace Ruzzie.Common.Types
         /// <inheritdoc />
         public void For(Action<TLeft> onLeft, Action<TRight> onRight)
         {
-
+            switch (_eitherStatus)
+            {
+                case Status.Right:
+                     onRight(_rightValue);
+                     break;
+                case Status.Left:
+                     onLeft(_leftValue);
+                     break;
+                default:
+                // ReSharper disable once RedundantCaseLabel
+                case Status.IsDefaultValue:
+                    throw new EitherIsDefaultValueException(
+                        $"Cannot perform {nameof(Match)}. The current {nameof(Either<TLeft, TRight>)} is initialized as default. It has neither a Left or a Right value.");
+            }
         }
 
         ///<inheritdoc />
@@ -283,7 +296,7 @@ namespace Ruzzie.Common.Types
     }
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     /// <seealso cref="System.Exception" />
     public class EitherIsDefaultValueException : Exception
@@ -296,7 +309,7 @@ namespace Ruzzie.Common.Types
         {
 
         }
-        
+
         public EitherIsDefaultValueException(string message, Exception innerException) : base(message, innerException)
         {
         }
