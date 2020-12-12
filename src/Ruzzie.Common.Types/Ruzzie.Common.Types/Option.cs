@@ -45,7 +45,7 @@ namespace Ruzzie.Common.Types
             _variant = OptionVariant.None;
             _value = default!;
         }
-        
+
         public Option(in TValue value)
         {
             _value = value;
@@ -126,6 +126,23 @@ namespace Ruzzie.Common.Types
         public TValue UnwrapOrElse(Func<TValue> orElse)
         {
             return IsSome() ? _value : orElse();
+        }
+
+        /// <summary>
+        /// When a contained value is present, <c>true</c> will be returned and the <paramref name="value"/> will be set to the contained value.
+        /// </summary>
+        /// <param name="value">The contained value when present, <c>default</c> otherwise.</param>
+        /// <returns><c>true</c> when a value is present, <c>false</c> otherwise.</returns>
+        public bool TryGetValue(out TValue value)
+        {
+            if (IsSome())
+            {
+                value = _value;
+                return true;
+            }
+
+            value = default;
+            return false;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

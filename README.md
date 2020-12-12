@@ -42,6 +42,15 @@ value.Should().Be("Hello!");
 Assert.AreEqual(Option.Some("car").UnwrapOr("bike"), "car");
 Assert.AreEqual(Option.None<string>().UnwrapOr("bike"), "bike");
 
+//TryGetValue
+var x = Option.Some("foo");
+Assert.AreEqual(true, x.TryGetValue(out var xValue));
+Assert.AreEqual("foo", xValue);
+
+var y = Option.None<string>();
+Assert.AreEqual(false, y.TryGetValue(out var yValue));
+Assert.AreEqual(default(string), yValue);
+
 ```
 
 ### Using Result Type, short examples

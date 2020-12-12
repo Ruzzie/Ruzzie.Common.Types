@@ -25,7 +25,7 @@ namespace Ruzzie.Common.Types.UnitTests
             var option = Option<string>.Some("Hello!");
 
             string value = option.Match(onNone: () => "No value!", onSome: val => val);
-            
+
             value.Should().Be("Hello!");
         }
 
@@ -116,6 +116,18 @@ namespace Ruzzie.Common.Types.UnitTests
         }
 
         [Test]
+        public void TryGetExample()
+        {
+            var x = Option.Some("foo");
+            Assert.AreEqual(true,  x.TryGetValue(out var xValue));
+            Assert.AreEqual("foo", xValue);
+
+            var y = Option.None<string>();
+            Assert.AreEqual(false,           y.TryGetValue(out var yValue));
+            Assert.AreEqual(default(string), yValue);
+        }
+
+        [Test]
         public void NoneEqualsNone()
         {
             var optionA = Option<string>.None;
@@ -133,7 +145,7 @@ namespace Ruzzie.Common.Types.UnitTests
             #else
              Option<int> optionA = null!;
 #endif
-           
+
             Option<int> optionB = 23;
 
             optionA.Equals(optionB).Should().BeFalse();
@@ -243,7 +255,7 @@ namespace Ruzzie.Common.Types.UnitTests
             //Source: https://blog.ploeh.dk/2018/03/26/the-maybe-functor/
             Func<string, string> id = x => x;
             var m = new Option<string>(value);
-            
+
             Assert.AreEqual(m, m.Map(id));
         }
 
@@ -252,7 +264,7 @@ namespace Ruzzie.Common.Types.UnitTests
         {
             Func<string, string> id = x => x;
             var m = new Option<string>();
- 
+
             Assert.AreEqual(m, m.Map(id));
         }
 
@@ -268,18 +280,18 @@ namespace Ruzzie.Common.Types.UnitTests
             Func<string, int> g = s => s.Length;
             Func<int, bool>   f = i => i % 2 == 0;
             var m = new Option<string>(value);
- 
+
             Assert.AreEqual(m.Map(g).Map(f), m.Map(s => f(g(s))));
         }
 
-        [Test]            
+        [Test]
         public void EmptyOptionObeysSecondFunctorLaw()
         {
             //Source: https://blog.ploeh.dk/2018/03/26/the-maybe-functor/
             Func<string, int> g = s => s.Length;
             Func<int, bool>   f = i => i % 2 == 0;
             var m = new Option<string>();
- 
+
             Assert.AreEqual(m.Map(g).Map(f), m.Map(s => f(g(s))));
         }
     }
