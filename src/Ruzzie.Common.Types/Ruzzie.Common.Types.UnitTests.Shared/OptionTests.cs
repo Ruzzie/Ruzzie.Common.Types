@@ -128,6 +128,18 @@ namespace Ruzzie.Common.Types.UnitTests
         }
 
         [Test]
+        public void TryGetWithDefaultExample()
+        {
+            var x = Option.Some("foo");
+            Assert.AreEqual(true,  x.TryGetValue(out var xValue, "default"));
+            Assert.AreEqual("foo", xValue);
+
+            var y = Option.None<string>();
+            Assert.AreEqual(false,           y.TryGetValue(out var yValue,"default"));
+            Assert.AreEqual("default", yValue);
+        }
+
+        [Test]
         public void NoneEqualsNone()
         {
             var optionA = Option<string>.None;

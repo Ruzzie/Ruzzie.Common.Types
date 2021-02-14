@@ -145,6 +145,24 @@ namespace Ruzzie.Common.Types
             return false;
         }
 
+        /// <summary>
+        /// When a contained value is present, <c>true</c> will be returned and the <paramref name="value"/> will be set to the contained value.
+        /// </summary>
+        /// <param name="value">The contained value when present, <paramref name="default"/> otherwise.</param>
+        /// <param name="default">The value to return when no value is present</param>
+        /// <returns><c>true</c> when a value is present, <c>false</c> otherwise.</returns>
+        public bool TryGetValue(out TValue value, TValue @default)
+        {
+            if (IsSome())
+            {
+                value = _value;
+                return true;
+            }
+
+            value = @default;
+            return false;
+        }
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool IsNone()
         {
