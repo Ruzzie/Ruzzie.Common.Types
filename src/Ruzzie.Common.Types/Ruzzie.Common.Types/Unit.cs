@@ -12,13 +12,13 @@ namespace Ruzzie.Common.Types
     [DebuggerDisplay("{" + nameof(ToString) + "}")]
     public class Unit : IEquatable<Unit>, IComparable<Unit>,  IComparable
     {
-        public bool Equals(Unit other)
+        public bool Equals(Unit? other)
         {
             return true;
         }
 
-        public override bool Equals(object obj)
-        {            
+        public override bool Equals(object? obj)
+        {
             return obj is Unit;
         }
 
@@ -37,7 +37,7 @@ namespace Ruzzie.Common.Types
             return false;
         }
 
-        public int CompareTo(Unit other)
+        public int CompareTo(Unit? other)
         {
             return 0;
         }
@@ -47,7 +47,7 @@ namespace Ruzzie.Common.Types
             return "void";
         }
 
-        int IComparable.CompareTo(object obj)
+        int IComparable.CompareTo(object? obj)
         {
             if (obj is Unit)
             {
@@ -56,7 +56,7 @@ namespace Ruzzie.Common.Types
 
             return 1;
         }
-        
+
         public static readonly Unit Void = new Unit();
     }
 }

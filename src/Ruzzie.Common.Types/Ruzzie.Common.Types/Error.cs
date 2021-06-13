@@ -58,7 +58,7 @@ namespace Ruzzie.Common.Types
             return Message == other.Message && Source.Equals(other.Source) && ExceptionSource.Equals(other.ExceptionSource);
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             return obj is Error other && Equals(other);
         }
@@ -67,7 +67,7 @@ namespace Ruzzie.Common.Types
         {
             unchecked
             {
-                var hashCode = (Message != null ? Message.GetHashCode() : 0);
+                var hashCode = Message.GetHashCode();
                 hashCode = (hashCode * 397) ^ Source.GetHashCode();
                 hashCode = (hashCode * 397) ^ ExceptionSource.GetHashCode();
                 return hashCode;
@@ -219,7 +219,7 @@ namespace Ruzzie.Common.Types
             return Message == other.Message && Source.Equals(other.Source) && EqualityComparer<TKind>.Default.Equals(ErrorKind, other.ErrorKind);
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             return obj is Err<TKind> other && Equals(other);
         }
@@ -309,7 +309,7 @@ namespace Ruzzie.Common.Types
             return Message == other.Message && Source.Equals(other.Source) && EqualityComparer<TKind>.Default.Equals(ErrorKind, other.ErrorKind) && ExceptionSource.Equals(other.ExceptionSource);
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             return obj is Err<TKind, TException> other && Equals(other);
         }

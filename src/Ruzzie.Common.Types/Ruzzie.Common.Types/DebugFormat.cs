@@ -24,13 +24,12 @@ namespace Ruzzie.Common.Types
         /// <returns>the value when in debug, empty otherwise.</returns>
         public static string IfDebug(this object value)
         {
-            return Debug ? value.ToString() : Empty;
+            return Debug ? (value.ToString() ?? Empty) : Empty;
         }
 
         private static bool IsAssemblyDebugBuild(Assembly assembly)
         {
-            object[] attributes = assembly.GetCustomAttributes(typeof(DebuggableAttribute), 
-                false);
+            object[] attributes = assembly.GetCustomAttributes(typeof(DebuggableAttribute), false);
             if (attributes.Length > 0)
             {
                 // Just because the 'DebuggableAttribute' is found doesn't necessarily mean

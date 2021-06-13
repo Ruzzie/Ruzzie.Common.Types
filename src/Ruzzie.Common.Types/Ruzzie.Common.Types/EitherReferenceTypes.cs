@@ -47,7 +47,7 @@ namespace Ruzzie.Common.Types
             //    onRight: rightValue => new Right<TLeftResult, TRightResult>(selectRight(rightValue)));
         }
 
-        public bool Equals(Left<TLeft, TRight> other)
+        public bool Equals(Left<TLeft, TRight>? other)
         {
 #pragma warning disable IDE0041 // Use 'is null' check
             if (ReferenceEquals(null, other))
@@ -65,14 +65,21 @@ namespace Ruzzie.Common.Types
             return EqualityComparer<TLeft>.Default.Equals(_value, other._value);
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             return ReferenceEquals(this, obj) || obj is Left<TLeft, TRight> other && Equals(other);
         }
 
         public override int GetHashCode()
         {
-            return EqualityComparer<TLeft>.Default.GetHashCode(_value);
+            if (_value != null)
+            {
+                return EqualityComparer<TLeft>.Default.GetHashCode(_value);
+            }
+            else
+            {
+                return 0;
+            }
         }
 
         public static bool operator ==(Left<TLeft, TRight> left, Left<TLeft, TRight> right)
@@ -113,7 +120,7 @@ namespace Ruzzie.Common.Types
             return new Right<TLeftResult, TRightResult>(selectRight(_value));
         }
 
-        public bool Equals(Right<TLeft, TRight> other)
+        public bool Equals(Right<TLeft, TRight>? other)
         {
 #pragma warning disable IDE0041 // Use 'is null' check
             if (ReferenceEquals(null, other))
@@ -129,14 +136,15 @@ namespace Ruzzie.Common.Types
             return EqualityComparer<TRight>.Default.Equals(_value, other._value);
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             return ReferenceEquals(this, obj) || obj is Right<TLeft, TRight> other && Equals(other);
         }
 
         public override int GetHashCode()
         {
-            return EqualityComparer<TRight>.Default.GetHashCode(_value);
+
+            return _value != null ? EqualityComparer<TRight>.Default.GetHashCode(_value) : 0;
         }
 
         public static bool operator ==(Right<TLeft, TRight> left, Right<TLeft, TRight> right)

@@ -187,3 +187,6 @@ src/Ruzzie.Common.Types/.vs/
 src/Ruzzie.Common.Types/packages/
 src/Ruzzie.Common.Types/Ruzzie.Common.Types.Benchmarks/BenchmarkDotNet.Artifacts/
 src/Ruzzie.Common.Types/Ruzzie.Common.Types/Ruzzie.Common.Types.xml
+src/Ruzzie.Common.Types/.idea/.idea.Ruzzie.Common.Types/.idea/vcs.xml
+src/Ruzzie.Common.Types/.idea/.idea.Ruzzie.Common.Types/.idea/dataSources.local.xml
+src/Ruzzie.Common.Types/.idea/

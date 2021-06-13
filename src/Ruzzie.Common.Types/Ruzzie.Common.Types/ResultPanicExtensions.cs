@@ -1,20 +1,15 @@
 ﻿using System;
-
+#nullable enable
 namespace Ruzzie.Common.Types
 {
     public static class ResultPanicExtensions
     {
         internal static PanicException<TError> CreatePanicExceptionForErr<TError>(FormattableString message, in TError error)
         {
-            if (error != null)
-            {
-                return new PanicException<TError>(error,
-                    FormattableString.Invariant($"{FormattableString.Invariant(message)}: {error.ToString()}"));
-            }
-            else
-            {
-                return new PanicException<TError>(default, FormattableString.Invariant(message));
-            }
+            return new PanicException<TError>(error,
+                                              // ReSharper disable once ConstantConditionalAccessQualifier
+                                              FormattableString.Invariant($"{FormattableString.Invariant(message)}: {error?.ToString()}"));
+
         }
 
         /// <summary>

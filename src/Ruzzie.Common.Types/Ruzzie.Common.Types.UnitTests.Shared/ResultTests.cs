@@ -9,11 +9,33 @@ namespace Ruzzie.Common.Types.UnitTests
     public class ResultTests
     {
         [Test]
+        public void GetValue_CSharp_Style_Branched_Continuation()
+        {
+            var list   = new List<string>();
+            var result = Result<string, List<string>>.Ok(list);
+
+            var (error, ok) = result.GetValue();
+
+            if (ok.TryGetValue(out var okValue))
+            {
+                okValue.Should().Equal(list);
+            }
+            else if (error.TryGetValue(out var errorValue, "no-error"))
+            {
+                Assert.Fail(errorValue);
+            }
+            else
+            {
+                Assert.Fail(error.UnwrapOr("Unknown error state."));
+            }
+        }
+
+        [Test]
         public void Pass_InParamFunc_ToMatch()
         {
             var result = new Result<int, double>(2.2);
 
-            result.Match((in int err) => true, (in double ok) => false);
+            result.Match((in int err) => true, (in double ok) => false).Should().BeFalse();
         }
 
         [Test]
@@ -82,7 +104,7 @@ namespace Ruzzie.Common.Types.UnitTests
 
             var x = Result.Ok<uint,uint>(2);
             Assert.AreEqual(x.MapErr(stringify), Result.Ok<string, uint>(2));
-            
+
             x = Result.Err<uint,uint>(13);
             Assert.AreEqual(x.MapErr(stringify), Result.Err<string,uint>("error code: 13"));
         }
@@ -243,7 +265,7 @@ namespace Ruzzie.Common.Types.UnitTests
         public void ImplicitOperator_ToOptionTuple_Ok()
         {
             var res = new Result<string, int>(1337);
-            
+
             //Act
             (Option<string> err, Option<int> ok) opts = res;
 
@@ -255,7 +277,7 @@ namespace Ruzzie.Common.Types.UnitTests
         public void ImplicitOperator_ToOptionTuple_Err()
         {
             var res = new Result<string, int>("error");
-            
+
             //Act
             (Option<string> err, Option<int> ok) opts = res;
 
@@ -267,7 +289,7 @@ namespace Ruzzie.Common.Types.UnitTests
         public void ImplicitOperator_ToOption_Ok()
         {
             var res = new Result<string, int>(1337);
-            
+
             //Act
             Option<int> ok = res;
 
@@ -279,7 +301,7 @@ namespace Ruzzie.Common.Types.UnitTests
         public void ImplicitOperator_ToOption_Err()
         {
             var res = new Result<string, int>("error");
-            
+
             //Act
             Option<string> err = res;
 
@@ -420,7 +442,7 @@ namespace Ruzzie.Common.Types.UnitTests
                 //yield return new[] {default(Result<string, int>)};
             }
         }
-            
+
         [Theory, TestCaseSource(nameof(BifunctorLawsData))]
         public void MapErrObeysFirstFunctorLaw(Result<string, int> e)
         {
@@ -444,7 +466,7 @@ namespace Ruzzie.Common.Types.UnitTests
         {
             bool f(string s) => string.IsNullOrWhiteSpace(s);
             DateTime g(int i) => new DateTime(i);
- 
+
             Assert.AreEqual(e.Map(f, g), e.MapOk(g).MapErr(f));
             Assert.AreEqual(
                 e.MapLeft(f).MapRight(g),
@@ -456,7 +478,7 @@ namespace Ruzzie.Common.Types.UnitTests
         {
             bool f(string s) => string.IsNullOrWhiteSpace(s);
             DateTime g(int i) => new DateTime(i);
- 
+
             Assert.AreEqual(e.Map(f, g), e.MapRight(g).MapLeft(f));
             Assert.AreEqual(
                 e.MapLeft(f).MapRight(g),
@@ -468,7 +490,7 @@ namespace Ruzzie.Common.Types.UnitTests
         {
             bool f(int x) => x % 2 == 0;
             int g(string s) => s.Length;
- 
+
             Assert.AreEqual(e.MapErr(x => f(g(x))), e.MapErr(g).MapErr(f));
         }
 
@@ -477,7 +499,7 @@ namespace Ruzzie.Common.Types.UnitTests
         {
             bool f(int x) => x % 2 == 0;
             int g(string s) => s.Length;
- 
+
             Assert.AreEqual(e.MapLeft(x => f(g(x))), e.MapLeft(g).MapLeft(f));
         }
 
@@ -486,7 +508,7 @@ namespace Ruzzie.Common.Types.UnitTests
         {
             char f(bool b) => b ? 'T' : 'F';
             bool g(int i) => i % 2 == 0;
- 
+
             Assert.AreEqual(e.MapOk(x => f(g(x))), e.MapOk(g).MapOk(f));
         }
 
@@ -495,7 +517,7 @@ namespace Ruzzie.Common.Types.UnitTests
         {
             char f(bool b) => b ? 'T' : 'F';
             bool g(int i) => i % 2 == 0;
- 
+
             Assert.AreEqual(e.MapRight(x => f(g(x))), e.MapRight(g).MapRight(f));
         }
 
@@ -506,7 +528,7 @@ namespace Ruzzie.Common.Types.UnitTests
             int g(string s) => s.Length;
             char h(bool b) => b ? 'T' : 'F';
             bool i(int x) => x % 2 == 0;
- 
+
             Assert.AreEqual(
                 e.Map(x => f(g(x)), y => h(i(y))),
                 e.Map(g, i).Map(f, h));
@@ -519,7 +541,7 @@ namespace Ruzzie.Common.Types.UnitTests
             int g(string s) => s.Length;
             char h(bool b) => b ? 'T' : 'F';
             bool i(int x) => x % 2 == 0;
- 
+
             Assert.AreEqual(
                 e.Map(x => f(g(x)), y => h(i(y))),
                 e.Map(g, i).Map(f, h));

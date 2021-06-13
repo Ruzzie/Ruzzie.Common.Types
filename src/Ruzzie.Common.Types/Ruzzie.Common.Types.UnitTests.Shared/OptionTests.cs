@@ -135,7 +135,7 @@ namespace Ruzzie.Common.Types.UnitTests
             Assert.AreEqual("foo", xValue);
 
             var y = Option.None<string>();
-            Assert.AreEqual(false,           y.TryGetValue(out var yValue,"default"));
+            Assert.AreEqual(false,     y.TryGetValue(out var yValue, "default"));
             Assert.AreEqual("default", yValue);
         }
 

@@ -36,7 +36,7 @@ namespace Ruzzie.Common.Types
         ///Returns true if the result is Ok.
         /// </summary>
         bool IsOk { get; }
-        
+
         /// <summary>
         ///Returns true if the result is Err.
         /// </summary>
@@ -53,7 +53,7 @@ namespace Ruzzie.Common.Types
         /// Converts this into an Option{T}, discarding the success value, if any.
         /// </summary>
         Option<TError> Err();
-       
+
         TU Match<TU>(Func<TError, TU> onErr, Func<T, TU> onOk);
 
         /// <summary>
@@ -64,7 +64,7 @@ namespace Ruzzie.Common.Types
         /// <param name="onOk">Calls this when the type is right.</param>
         /// <returns></returns>
         TU Match<TU>(OnErr<TU, TError> onErr, OnOk<TU, T> onOk);
-        
+
         /// <summary>
         ///Maps a Result{TErr,T} to Result{TErr,TU} by applying a function to a contained Ok value, leaving an Err value untouched.
         ///  This function can be used to compose the results of two functions.
@@ -236,7 +236,7 @@ namespace Ruzzie.Common.Types
         }
 
         /// <inheritdoc />
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             return obj is Result<TError, T> other && Equals(other);
         }
@@ -246,7 +246,7 @@ namespace Ruzzie.Common.Types
         /// When not initialized this returns 0.
         /// </summary>
         /// <returns>
-        /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
+        /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.
         /// </returns>
         public override int GetHashCode()
         {
@@ -409,6 +409,85 @@ namespace Ruzzie.Common.Types
             return IsOk ? _value : op(ErrValue);
         }
 
+        /// experimental
+        public bool TryIsOk(out Option<T> value)
+        {
+            if (IsOk)
+            {
+                value = _value;
+                return true;
+            }
+
+            value = Option<T>.None;
+            return false;
+        }
+
+        /// experimental
+        public bool TryIsOk(out T? value)
+        {
+            if (IsOk)
+            {
+                value = _value;
+                return true;
+            }
+
+            value = default;
+            return false;
+        }
+
+        /// experimental
+        public bool TryIsOkOr(out T value, T orValue)
+        {
+            if (IsOk)
+            {
+                value = _value;
+                return true;
+            }
+
+            value = orValue;
+            return false;
+        }
+
+        /// experimental
+        public (bool isError, bool isOk) GetValue(out Option<T> okValue, out Option<TError> errValue)
+        {
+            if (IsOk)
+            {
+                okValue = _value;
+                errValue = Option<TError>.None;
+                return (false, true);
+            }
+
+            okValue  = Option<T>.None;
+            errValue = ErrValue;
+            return (true, false);
+        }
+
+        public (Option<TError> error, Option<T> ok) GetValue()
+        {
+            if (IsOk)
+            {
+                return (error: Option<TError>.None, ok: _value);
+            }
+
+            return (error: ErrValue, ok: Option<T>.None);
+        }
+
+        /// experimental
+        public (bool isError, bool isOk) GetValue(out T? okValue, out TError? errValue)
+        {
+            if (IsOk)
+            {
+                okValue  = _value;
+                errValue = default;
+                return (false, true);
+            }
+
+            okValue  = default;
+            errValue = ErrValue;
+            return (true, false);
+        }
+
         private enum ResultVariant : byte
         {
             Ok = 1,
@@ -440,13 +519,15 @@ namespace Ruzzie.Common.Types
             _variant = (ResultVariant)serializationInfo.GetByte(VariantFieldName);
             if (_variant == ResultVariant.Ok)
             {
-                _value = (T)serializationInfo.GetValue(ValueFieldName, typeof(T));
+                //note: decide on whether to panic or leave this as is, since it is possible that the caller intended to serialize a null value
+                _value = (T?)serializationInfo.GetValue(ValueFieldName, typeof(T))!;
                 _err = default!;
                 _initialized = true;
             }
             else
             {
-                _err = (TError)serializationInfo.GetValue(ErrFieldName, typeof(TError));
+                //note: decide on whether to panic or leave this as is, since it is possible that the caller intended to serialize a null value
+                _err = (TError?)serializationInfo.GetValue(ErrFieldName, typeof(TError))!;
                 _value = default!;
                 _initialized = true;
             }

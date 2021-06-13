@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;netstandard2.1;net5.0</TargetFrameworks>
-    <LangVersion>8.0</LangVersion>
+    <LangVersion>9</LangVersion>
     <NullableContextOptions>enable</NullableContextOptions>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <WarningsAsErrors />
@@ -16,6 +16,7 @@
     <RepositoryType>git</RepositoryType>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <DocumentationFile>Ruzzie.Common.Types.xml</DocumentationFile>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
   <PropertyGroup>
     <NoWarn>1701;1702;1591</NoWarn>

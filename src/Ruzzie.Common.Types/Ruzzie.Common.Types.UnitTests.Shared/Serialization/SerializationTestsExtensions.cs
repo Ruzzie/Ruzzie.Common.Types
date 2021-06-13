@@ -50,5 +50,30 @@ namespace Ruzzie.Common.Types.UnitTests.Serialization
             value.Equals(deserializedOption).Should().BeTrue();
             return deserializedOption;
         }
+
+
+        public static T AssertSystemTextJsonSerializationSuccessForValueType<T>(this T value) where T : struct
+        {
+
+            var serializedOption = System.Text.Json.JsonSerializer.Serialize(value);
+
+            var deserializedOption = System.Text.Json.JsonSerializer.Deserialize<T>(serializedOption);
+
+            deserializedOption.Should().NotBeSameAs(value);
+            value.Equals(deserializedOption).Should().BeTrue();
+            return deserializedOption;
+        }
+
+        public static T AssertJilJsonSerializationSuccessForValueType<T>(this T value) where T : struct
+        {
+
+            var serializedOption = Jil.JSON.SerializeDynamic(value);
+
+            var deserializedOption = Jil.JSON.Deserialize<T>(serializedOption);
+
+            deserializedOption.Should().NotBeSameAs(value);
+            value.Equals(deserializedOption).Should().BeTrue();
+            return deserializedOption;
+        }
     }
 }

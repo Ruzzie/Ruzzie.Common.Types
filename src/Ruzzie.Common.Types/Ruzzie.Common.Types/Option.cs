@@ -133,7 +133,7 @@ namespace Ruzzie.Common.Types
         /// </summary>
         /// <param name="value">The contained value when present, <c>default</c> otherwise.</param>
         /// <returns><c>true</c> when a value is present, <c>false</c> otherwise.</returns>
-        public bool TryGetValue(out TValue value)
+        public bool TryGetValue(out TValue? value)
         {
             if (IsSome())
             {
@@ -174,6 +174,7 @@ namespace Ruzzie.Common.Types
         {
             return _variant == OptionVariant.Some;
         }
+        
         public bool Equals(Option<TValue> other)
         {
             if (IsNone() && other.IsNone())
@@ -184,7 +185,7 @@ namespace Ruzzie.Common.Types
             return Equals(_value, other._value);
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             return obj is Option<TValue> other && Equals(other);
         }
@@ -199,11 +200,11 @@ namespace Ruzzie.Common.Types
             return Unit.Void.GetHashCode();
         }
 
-        public string ToString(string format, IFormatProvider formatProvider)
+        public string ToString(string? format, IFormatProvider? formatProvider)
         {
             if (IsNone())
             {
-                return string.Empty;
+                return "";
             }
 
             if (_value is IFormattable formattable)
@@ -211,17 +212,17 @@ namespace Ruzzie.Common.Types
                 return formattable.ToString(format, formatProvider);
             }
 
-            return string.Format(formatProvider, format);
+            return format != null ? string.Format(formatProvider, format, _value) : _value?.ToString() ?? "";
         }
 
         public override string ToString()
         {
             if (IsNone())
             {
-                return string.Empty;
+                return "";
             }
 
-            return _value.ToString();
+            return _value?.ToString() ?? "";
         }
 
         //Serialize
@@ -240,7 +241,8 @@ namespace Ruzzie.Common.Types
             _variant = serializationInfo.GetBoolean(HasValueFieldName) ? OptionVariant.Some : OptionVariant.None;
             if (_variant == OptionVariant.Some)
             {
-                _value = (TValue) serializationInfo.GetValue(ValueFieldName, typeof(TValue));
+                var value = (TValue?) serializationInfo.GetValue(ValueFieldName, typeof(TValue));
+                _value = value!;//note: decide on whether to panic or leave this as is, since it is possible that the caller intended to serialize a null value
             }
             else
             {

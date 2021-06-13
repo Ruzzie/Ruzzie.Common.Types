@@ -253,7 +253,7 @@ namespace Ruzzie.Common.Types
 
 
         /// <inheritdoc />
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             return obj is Either<TLeft, TRight> other && Equals(other);
         }
