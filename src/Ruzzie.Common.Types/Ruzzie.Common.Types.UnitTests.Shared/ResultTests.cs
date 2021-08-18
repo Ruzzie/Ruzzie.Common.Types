@@ -6,8 +6,57 @@ using NUnit.Framework;
 // ReSharper disable InconsistentNaming
 namespace Ruzzie.Common.Types.UnitTests
 {
+    [TestFixture]
     public class ResultTests
     {
+        [Test]
+        public void JoinOk_Ok()
+        {
+            var x = Result.Ok<string, uint>(2);
+            var y = Result.Ok<string, uint>(3);
+            Assert.AreEqual(x.JoinOk(y), Result.Ok<string, (uint, uint)>((2,3)));
+        }
+
+        [Test]
+        public void JoinOk_FirstIsErr()
+        {
+            var x = Result.Err<string, uint>("first");
+            var y = Result.Ok<string, uint>(3);
+            Assert.AreEqual(x.JoinOk(y), Result.Err<string, (uint, uint)>("first"));
+        }
+
+        [Test]
+        public void JoinOk_SecondIsErr()
+        {
+            var x = Result.Ok<string, uint>(2);
+            var y = Result.Err<string, uint>("second");
+            Assert.AreEqual(x.JoinOk(y), Result.Err<string, (uint, uint)>("second"));
+        }
+
+        [Test]
+        public void MapOk2_Ok()
+        {
+            var x = Result.Ok<string, uint>(2);
+            var y = Result.Ok<string, uint>(3);
+            Assert.AreEqual(x.MapOk2(y, (a, b) => (a,b)), Result.Ok<string, (uint, uint)>((2,3)));
+        }
+
+        [Test]
+        public void MapOk2_FirstIsErr()
+        {
+            var x = Result.Err<string, uint>("first");
+            var y = Result.Ok<string, uint>(3);
+            Assert.AreEqual(x.MapOk2(y, (a, b) => (a,b)), Result.Err<string, (uint, uint)>("first"));
+        }
+
+        [Test]
+        public void MapOk2_SecondIsErr()
+        {
+            var x = Result.Ok<string, uint>(2);
+            var y = Result.Err<string, uint>("second");
+            Assert.AreEqual(x.MapOk2(y, (a, b) => (a,b)), Result.Err<string, (uint, uint)>("second"));
+        }
+
         [Test]
         public void GetValue_CSharp_Style_Branched_Continuation()
         {

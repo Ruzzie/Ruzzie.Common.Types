@@ -110,6 +110,16 @@ namespace Ruzzie.Common.Types
         ///Unwraps a result, yielding the content of an Ok. If the value is an Err then it calls op with its value.
         /// </summary>
         T UnwrapOrElse(Func<TError, T> op);
+
+        /// <summary>
+        ///Joins two results to a tuple of Ok values when both are Ok value, returns the first error otherwise.
+        ///  This function can be used to compose results of 2 functions.
+        /// </summary>
+        Result<TError, (T, TU)> JoinOk<TU>(Result<TError, TU> result);
+
+        /// When 2 results are Ok the map function will be called. The first error will be called otherwise.
+        /// this can be used to compose results.
+        Result<TError, TNewOk> MapOk2<TNewOk,TU>(Result<TError, TU> result,Func<T,TU,TNewOk> map);
     }
 
     /// <summary>
@@ -398,6 +408,38 @@ namespace Ruzzie.Common.Types
         {
             //Could use match function, but I assume this is faster.
             return IsOk ? _value : op(ErrValue);
+        }
+
+        /// <inheritdoc/>
+        public Result<TError, (T, TU)> JoinOk<TU>(Result<TError, TU> result)
+        {
+            if (!IsOk)
+            {
+                return _err;
+            }
+
+            if (result.IsOk)
+            {
+                return (_value, result._value);
+            }
+
+            return result._err;
+        }
+
+        /// <inheritdoc/>
+        public Result<TError, TNewOk> MapOk2<TNewOk, TU>(Result<TError, TU> result, Func<T, TU, TNewOk> map)
+        {
+            if (!IsOk)
+            {
+                return _err;
+            }
+
+            if (result.IsOk)
+            {
+                return map(_value, result._value);
+            }
+
+            return result._err;
         }
 
         /// <summary>
