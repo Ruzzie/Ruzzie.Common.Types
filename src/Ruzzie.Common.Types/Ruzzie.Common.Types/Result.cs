@@ -115,11 +115,11 @@ namespace Ruzzie.Common.Types
         ///Joins two results to a tuple of Ok values when both are Ok value, returns the first error otherwise.
         ///  This function can be used to compose results of 2 functions.
         /// </summary>
-        Result<TError, (T, TU)> JoinOk<TU>(Result<TError, TU> result);
+        Result<TError, (T, TU)> JoinOk<TU>(Result<TError, TU> secondResult);
 
         /// When 2 results are Ok the map function will be called. The first error will be called otherwise.
         /// this can be used to compose results.
-        Result<TError, TNewOk> MapOk2<TNewOk,TU>(Result<TError, TU> result,Func<T,TU,TNewOk> map);
+        Result<TError, TNewOk> MapOk2<TNewOk,TU>(Result<TError, TU> secondResult,Func<T,TU,TNewOk> map);
     }
 
     /// <summary>
@@ -134,10 +134,11 @@ namespace Ruzzie.Common.Types
     [Serializable]
     public readonly struct Result<TError, T> : IEitherValueType<TError, T>, IEquatable<Result<TError, T>>, IResult<TError, T>, ISerializable
     {
-        private readonly bool _initialized;
+        private readonly bool          _initialized;
         private readonly ResultVariant _variant;
-        private readonly T _value;
-        private readonly TError _err;
+        private readonly T             _value;
+        private readonly TError        _err;
+
         /// <inheritdoc />
         public bool IsOk => _variant == ResultVariant.Ok;
         /// <inheritdoc />
@@ -162,11 +163,11 @@ namespace Ruzzie.Common.Types
             }
         }
 
-        private Result(in TError err, in T ok, in ResultVariant variant)
+        private Result(in TError err, in T ok, ResultVariant variant)
         {
-            _variant = variant;
-            _err = err;
-            _value = ok;
+            _variant     = variant;
+            _err         = err;
+            _value       = ok;
             _initialized = true;
         }
 
@@ -286,6 +287,16 @@ namespace Ruzzie.Common.Types
 
         /// <inheritdoc/>
         public TU Match<TU>(OnErr<TU, TError> onErr, OnOk<TU, T> onOk)
+        {
+            return IsOk ? onOk(_value) : onErr(ErrValue);
+        }
+
+        public unsafe TU Match<TU>(delegate*<in TError, TU> onErr,  delegate*<in T, TU> onOk)
+        {
+            return IsOk ? onOk(_value) : onErr(ErrValue);
+        }
+
+        public unsafe TU Match<TU>(delegate*<TError, TU> onErr, delegate*<T, TU> onOk)
         {
             return IsOk ? onOk(_value) : onErr(ErrValue);
         }
@@ -411,35 +422,35 @@ namespace Ruzzie.Common.Types
         }
 
         /// <inheritdoc/>
-        public Result<TError, (T, TU)> JoinOk<TU>(Result<TError, TU> result)
+        public Result<TError, (T, TU)> JoinOk<TU>(Result<TError, TU> secondResult)
         {
             if (!IsOk)
             {
                 return _err;
             }
 
-            if (result.IsOk)
+            if (secondResult.IsOk)
             {
-                return (_value, result._value);
+                return (_value, secondResult._value);
             }
 
-            return result._err;
+            return secondResult._err;
         }
 
         /// <inheritdoc/>
-        public Result<TError, TNewOk> MapOk2<TNewOk, TU>(Result<TError, TU> result, Func<T, TU, TNewOk> map)
+        public Result<TError, TNewOk> MapOk2<TNewOk, TU>(Result<TError, TU> secondResult, Func<T, TU, TNewOk> map)
         {
             if (!IsOk)
             {
                 return _err;
             }
 
-            if (result.IsOk)
+            if (secondResult.IsOk)
             {
-                return map(_value, result._value);
+                return map(_value, secondResult._value);
             }
 
-            return result._err;
+            return secondResult._err;
         }
 
         /// <summary>
@@ -452,6 +463,7 @@ namespace Ruzzie.Common.Types
         }
 
         /// experimental
+        [Obsolete("will be removed. you can use Ok() which returns an option, and the IsOk property returns a bool")]
         public bool TryIsOk(out Option<T> value)
         {
             if (IsOk)
@@ -537,8 +549,8 @@ namespace Ruzzie.Common.Types
         }
 
         private const string VariantFieldName = "variant";
-        private const string ValueFieldName = "ok";
-        private const string ErrFieldName = "err";
+        private const string ValueFieldName   = "ok";
+        private const string ErrFieldName     = "err";
 
         //Serialize
         /// <inheritdoc />

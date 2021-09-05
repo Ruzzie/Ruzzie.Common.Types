@@ -17,6 +17,7 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <DocumentationFile>Ruzzie.Common.Types.xml</DocumentationFile>
     <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup>
     <NoWarn>1701;1702;1591</NoWarn>
