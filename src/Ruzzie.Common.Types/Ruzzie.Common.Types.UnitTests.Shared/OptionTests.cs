@@ -152,12 +152,7 @@ namespace Ruzzie.Common.Types.UnitTests
         [Test]
         public void EqualsNullAsOptionTypeTest()
         {
-#if !CS8
             Option<int> optionA = null;
-            #else
-             Option<int> optionA = null!;
-#endif
-
             Option<int> optionB = 23;
 
             optionA.Equals(optionB).Should().BeFalse();

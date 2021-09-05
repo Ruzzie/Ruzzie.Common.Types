@@ -26,35 +26,42 @@ namespace Ruzzie.Common.Types
     [DebuggerDisplay("{"+nameof(_variant) + "}, {"+nameof(_value) + "}")]
     public readonly struct Option<TValue> : IOption<TValue>, IEquatable<Option<TValue>>, ISerializable, IFormattable
     {
-        public static readonly Option<TValue> None = new Option<TValue>(Unit.Void);
-        private readonly OptionVariant _variant;
-        private readonly TValue _value;
+        public static readonly Option<TValue> None  = new Option<TValue>(Unit.Void);
+
         private const string HasValueFieldName = "hasValue";
-        private const string ValueFieldName = "value";
+        private const string ValueFieldName    = "value";
+
+        private readonly OptionVariant _variant;
+        private readonly TValue        _value;
 
         public static Option<TValue> Some(in TValue value)
         {
             return new Option<TValue>(value);
         }
 
-        // ReSharper disable once UnusedParameter.Local
-#pragma warning disable IDE0060 // Remove unused parameter
-        private Option(in Unit noValue)
-#pragma warning restore IDE0060 // Remove unused parameter
-        {
-            _variant = OptionVariant.None;
-            _value = default!;
-        }
-
         public Option(in TValue value)
         {
-            _value = value;
+            _value   = value;
             _variant = OptionVariant.Some;
         }
 
         public static implicit operator Option<TValue>(in TValue value) => new Option<TValue>(value);
+
+        // ReSharper disable once UnusedParameter.Local
+#pragma warning disable IDE0060 // Remove unused parameter
+        private Option(Unit _)
+#pragma warning restore IDE0060 // Remove unused parameter
+        {
+            _variant = OptionVariant.None;
+            _value   = default!;
+        }
+
         // ReSharper disable once UnusedParameter.Global
-        public static implicit operator Option<TValue>(in Unit _) => new Option<TValue>(Unit.Void);
+        /// <summary>
+        /// Implicit operator to create a new Option with a  nothing value, when a <see cref="Unit.Void"/> is passed.
+        ///   Or when <typeparamref name="TValue"/> is a value type and one passes a null value.
+        /// </summary>
+        public static implicit operator Option<TValue>(in Unit _) => new Option<TValue>(_);
 
         T IEither<Unit, TValue>.Match<T>(Func<Unit, T> onNone, Func<TValue, T> onSome)
         {
@@ -120,6 +127,7 @@ namespace Ruzzie.Common.Types
         {
             return IsSome() ? _value : @default;
         }
+        
         ///<summary>
         ///Returns the contained value or computes it from a closure.
         ///</summary>
@@ -174,7 +182,7 @@ namespace Ruzzie.Common.Types
         {
             return _variant == OptionVariant.Some;
         }
-        
+
         public bool Equals(Option<TValue> other)
         {
             if (IsNone() && other.IsNone())
@@ -197,7 +205,7 @@ namespace Ruzzie.Common.Types
                 return _value.GetHashCode();
             }
 
-            return Unit.Void.GetHashCode();
+            return 0;
         }
 
         public string ToString(string? format, IFormatProvider? formatProvider)

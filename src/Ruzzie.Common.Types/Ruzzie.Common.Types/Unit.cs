@@ -10,7 +10,7 @@ namespace Ruzzie.Common.Types
     [Serializable]
 #endif
     [DebuggerDisplay("{" + nameof(ToString) + "}")]
-    public class Unit : IEquatable<Unit>, IComparable<Unit>,  IComparable
+    public sealed class Unit : IEquatable<Unit>, IComparable<Unit>,  IComparable
     {
         public bool Equals(Unit? other)
         {
@@ -19,6 +19,9 @@ namespace Ruzzie.Common.Types
 
         public override bool Equals(object? obj)
         {
+            if (obj == null)
+                return true;
+
             return obj is Unit;
         }
 
@@ -49,12 +52,7 @@ namespace Ruzzie.Common.Types
 
         int IComparable.CompareTo(object? obj)
         {
-            if (obj is Unit)
-            {
-                return 0;
-            }
-
-            return 1;
+            return 0;
         }
 
         public static readonly Unit Void = new Unit();
