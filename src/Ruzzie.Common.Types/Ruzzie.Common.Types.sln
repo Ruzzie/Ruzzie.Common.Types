@@ -7,15 +7,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ruzzie.Common.Types", "Ruzz
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Ruzzie.Common.Types.UnitTests.Shared", "Ruzzie.Common.Types.UnitTests.Shared\Ruzzie.Common.Types.UnitTests.Shared.shproj", "{1ABF7A34-BB2D-497C-84FD-9D5C1BDEB6F0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ruzzie.Common.Types.UnitTests.NET472CS7", "Ruzzie.Common.Types.UnitTests.NET472CS7\Ruzzie.Common.Types.UnitTests.NET472CS7.csproj", "{74B69731-EEE9-4014-A1AE-F42CB7C3336E}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ruzzie.Common.Types.UnitTests.NET472CS8", "Ruzzie.Common.Types.UnitTests.NET472CS8\Ruzzie.Common.Types.UnitTests.NET472CS8.csproj", "{B175FDEA-A931-4C92-B04E-C5E02E6EA02C}"
-EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Ruzzie.Common.Types.Benchmarks.Shared", "Ruzzie.Common.Types.Benchmarks.Shared\Ruzzie.Common.Types.Benchmarks.Shared.shproj", "{4364D825-E4BC-401D-980B-29691B9C65D8}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ruzzie.Common.Types.Benchmarks", "Ruzzie.Common.Types.Benchmarks\Ruzzie.Common.Types.Benchmarks.csproj", "{FEB14946-C770-45C8-BAD0-479DB37757C1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ruzzie.Common.Types.UnitTests.NETCORECS8", "Ruzzie.Common.Types.UnitTests.NETCORECS8\Ruzzie.Common.Types.UnitTests.NETCORECS8.csproj", "{FA4A7AE6-7640-481F-8F6F-F059F3D9957A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ruzzie.Common.Types.UnitTests", "Ruzzie.Common.Types.UnitTests\Ruzzie.Common.Types.UnitTests.csproj", "{DCC8610C-4233-4512-BED9-B234473F1469}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
@@ -33,14 +31,6 @@ Global
 		{A51F3E98-6DA4-4612-9298-ABF865087D59}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A51F3E98-6DA4-4612-9298-ABF865087D59}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A51F3E98-6DA4-4612-9298-ABF865087D59}.Release|Any CPU.Build.0 = Release|Any CPU
-		{74B69731-EEE9-4014-A1AE-F42CB7C3336E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{74B69731-EEE9-4014-A1AE-F42CB7C3336E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{74B69731-EEE9-4014-A1AE-F42CB7C3336E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{74B69731-EEE9-4014-A1AE-F42CB7C3336E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B175FDEA-A931-4C92-B04E-C5E02E6EA02C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B175FDEA-A931-4C92-B04E-C5E02E6EA02C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B175FDEA-A931-4C92-B04E-C5E02E6EA02C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B175FDEA-A931-4C92-B04E-C5E02E6EA02C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{FEB14946-C770-45C8-BAD0-479DB37757C1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{FEB14946-C770-45C8-BAD0-479DB37757C1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FEB14946-C770-45C8-BAD0-479DB37757C1}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -49,6 +39,10 @@ Global
 		{FA4A7AE6-7640-481F-8F6F-F059F3D9957A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FA4A7AE6-7640-481F-8F6F-F059F3D9957A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FA4A7AE6-7640-481F-8F6F-F059F3D9957A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DCC8610C-4233-4512-BED9-B234473F1469}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DCC8610C-4233-4512-BED9-B234473F1469}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DCC8610C-4233-4512-BED9-B234473F1469}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DCC8610C-4233-4512-BED9-B234473F1469}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

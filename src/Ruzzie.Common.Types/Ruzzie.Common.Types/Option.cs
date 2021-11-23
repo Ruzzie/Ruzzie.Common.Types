@@ -78,6 +78,11 @@ namespace Ruzzie.Common.Types
             return _variant == OptionVariant.None ? onNone() : onSome(_value);
         }
 
+        public unsafe T Match<T>(delegate*<T> onNone, delegate*<TValue, T> onSome)
+        {
+            return _variant == OptionVariant.None ? onNone() : onSome(_value);
+        }
+
         /// <summary>
         /// Maps an <see cref="Option{TValue}"/> <see cref="IOption{TResult}"/> by applying a function to the value. The function will only be applied when there is a value. None is returned otherwise.
         /// </summary>
@@ -91,12 +96,15 @@ namespace Ruzzie.Common.Types
         /// </summary>
         public Option<TResult> Map<TResult>(Func<TValue, TResult> selector)
         {
-            if (IsSome())
-            {
-                return new Option<TResult>(selector(_value));
-            }
+            return IsSome() ? new Option<TResult>(selector(_value)) : Option<TResult>.None;
+        }
 
-            return Option<TResult>.None;
+        /// <summary>
+        /// Maps an <see cref="Option{TValue}"/> <see cref="IOption{TResult}"/> by applying a function to the value. The function will only be applied when there is a value. None is returned otherwise.
+        /// </summary>
+        public unsafe Option<TResult> Map<TResult>(delegate*<TValue, TResult> selector)
+        {
+            return IsSome() ? new Option<TResult>(selector(_value)) : Option<TResult>.None;
         }
 
         /// <summary>
@@ -127,7 +135,7 @@ namespace Ruzzie.Common.Types
         {
             return IsSome() ? _value : @default;
         }
-        
+
         ///<summary>
         ///Returns the contained value or computes it from a closure.
         ///</summary>

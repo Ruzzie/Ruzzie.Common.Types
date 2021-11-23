@@ -16,7 +16,7 @@ namespace Ruzzie.Common.Types.Benchmarks
 
     [SimpleJob(RuntimeMoniker.Net472)]
     [SimpleJob(RuntimeMoniker.NetCoreApp31)]
-    [SimpleJob(RuntimeMoniker.NetCoreApp50)]
+    [SimpleJob(RuntimeMoniker.Net50)]
     [MemoryDiagnoser]
     [RankColumn]
     [IterationCount(5000)]
@@ -74,7 +74,7 @@ namespace Ruzzie.Common.Types.Benchmarks
 
     [SimpleJob(RuntimeMoniker.Net472)]
     [SimpleJob(RuntimeMoniker.NetCoreApp31)]
-    [SimpleJob(RuntimeMoniker.NetCoreApp50)]
+    [SimpleJob(RuntimeMoniker.Net50)]
     [MemoryDiagnoser]
     [RankColumn]
     [IterationCount(2000)]

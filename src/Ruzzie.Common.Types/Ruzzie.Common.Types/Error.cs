@@ -4,10 +4,33 @@ using System.Diagnostics;
 
 namespace Ruzzie.Common.Types
 {
-    public interface IHasExceptionSource<TException> where TException : Exception
+    public interface IHasExceptionSource<TException>:IHasBaseException where TException : Exception
     {
         Option<TException> ExceptionSource { get; }
+
+        Option<Exception> IHasBaseException.BaseException
+        {
+            get
+            {
+                unsafe
+                {
+                    return ExceptionSource.Map(&MapToBaseException);
+                }
+            }
+        }
+
+        internal static Exception MapToBaseException(TException arg)
+        {
+            return arg.GetBaseException();
+        }
+
     }
+
+    public interface IHasBaseException
+    {
+        Option<Exception> BaseException { get; }
+    }
+
 
     public interface IError
     {
