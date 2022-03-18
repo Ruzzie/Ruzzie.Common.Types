@@ -202,6 +202,19 @@ namespace Ruzzie.Common.Types.UnitTests
             Assert.AreEqual(Result.Err<uint, uint>(3).AndThen(sq).AndThen(sq), Result.Err<uint, uint>(3));
         }
 
+
+        [Test]
+        public unsafe void AndThenPassDelegatePointerExample()
+        {
+            static Result<uint, uint> sq(uint  x) => Result.Ok<uint, uint>(x * x);
+            static Result<uint, uint> err(uint x) => Result.Err<uint, uint>(x);
+
+            Assert.AreEqual(Result.Ok<uint, uint>(2).AndThen(&sq).AndThen(&sq),  Result.Ok<uint, uint>(16));
+            Assert.AreEqual(Result.Ok<uint, uint>(2).AndThen(&sq).AndThen(&err), Result.Err<uint, uint>(4));
+            Assert.AreEqual(Result.Ok<uint, uint>(2).AndThen(&err).AndThen(&sq), Result.Err<uint, uint>(2));
+            Assert.AreEqual(Result.Err<uint, uint>(3).AndThen(&sq).AndThen(&sq), Result.Err<uint, uint>(3));
+        }
+
         [Test]
         public void AndThen_In_Example()
         {
@@ -212,6 +225,18 @@ namespace Ruzzie.Common.Types.UnitTests
             Assert.AreEqual(Result.Ok<uint, uint>(2).AndThen(sq).AndThen(err), Result.Err<uint, uint>(4));
             Assert.AreEqual(Result.Ok<uint, uint>(2).AndThen(err).AndThen(sq), Result.Err<uint, uint>(2));
             Assert.AreEqual(Result.Err<uint, uint>(3).AndThen(sq).AndThen(sq), Result.Err<uint, uint>(3));
+        }
+
+        [Test]
+        public unsafe void AndThen_In_PassDelegatePointerExample()
+        {
+            static Result<uint, uint> sq(in  uint x) => Result.Ok<uint, uint>(x * x);
+            static Result<uint, uint> err(in uint x) => Result.Err<uint, uint>(x);
+
+            Assert.AreEqual(Result.Ok<uint, uint>(2).AndThen(&sq).AndThen(&sq),  Result.Ok<uint, uint>(16));
+            Assert.AreEqual(Result.Ok<uint, uint>(2).AndThen(&sq).AndThen(&err), Result.Err<uint, uint>(4));
+            Assert.AreEqual(Result.Ok<uint, uint>(2).AndThen(&err).AndThen(&sq), Result.Err<uint, uint>(2));
+            Assert.AreEqual(Result.Err<uint, uint>(3).AndThen(&sq).AndThen(&sq), Result.Err<uint, uint>(3));
         }
 
         [Test]

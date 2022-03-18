@@ -366,6 +366,16 @@ namespace Ruzzie.Common.Types
             return IsOk ? op(_value) : Result<TError, TU>.Err(ErrValue);
         }
 
+        public unsafe Result<TError, TU> AndThen<TU>(delegate*<in T, Result<TError, TU>> onOk)
+        {
+            return IsOk ? onOk(_value) : Result<TError, TU>.Err(ErrValue);
+        }
+
+        public unsafe Result<TError, TU> AndThen<TU>(delegate*<T, Result<TError, TU>> onOk)
+        {
+            return IsOk ? onOk(_value) : Result<TError, TU>.Err(ErrValue);
+        }
+
         /// <summary>
         ///Returns res if the result is Err, otherwise returns the Ok value of self.
         ///    Arguments passed to or are eagerly evaluated; if you are passing the result of a function call, it is recommended to use or_else, which is lazily evaluated.
