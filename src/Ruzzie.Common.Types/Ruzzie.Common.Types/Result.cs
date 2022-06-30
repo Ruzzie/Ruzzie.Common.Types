@@ -28,6 +28,7 @@ namespace Ruzzie.Common.Types
     }
 
     public delegate TU OnErr<out TU, TError>(in TError err);
+
     public delegate TU OnOk<out TU, T>(in T ok);
 
     public interface IResult<TError, T>
@@ -119,7 +120,7 @@ namespace Ruzzie.Common.Types
 
         /// When 2 results are Ok the map function will be called. The first error will be called otherwise.
         /// this can be used to compose results.
-        Result<TError, TNewOk> MapOk2<TNewOk,TU>(Result<TError, TU> secondResult,Func<T,TU,TNewOk> map);
+        Result<TError, TNewOk> MapOk2<TNewOk, TU>(Result<TError, TU> secondResult, Func<T, TU, TNewOk> map);
     }
 
     /// <summary>
@@ -132,7 +133,8 @@ namespace Ruzzie.Common.Types
     /// This such that chaining and composing results that are ok should work with the default.
     /// </remarks>
     [Serializable]
-    public readonly struct Result<TError, T> : IEitherValueType<TError, T>, IEquatable<Result<TError, T>>, IResult<TError, T>, ISerializable
+    public readonly struct Result<TError, T> : IEitherValueType<TError, T>, IEquatable<Result<TError, T>>
+                                             , IResult<TError, T>, ISerializable
     {
         private readonly bool          _initialized;
         private readonly ResultVariant _variant;
@@ -141,6 +143,7 @@ namespace Ruzzie.Common.Types
 
         /// <inheritdoc />
         public bool IsOk => _variant == ResultVariant.Ok;
+
         /// <inheritdoc />
         public bool IsErr => _variant == ResultVariant.Err;
 
@@ -157,8 +160,10 @@ namespace Ruzzie.Common.Types
             {
                 if (!_initialized)
                 {
-                    throw ResultPanicExtensions.CreatePanicExceptionForErr($"Result is uninitialized. You cannot obtain the Err value.", _err);
+                    throw ResultPanicExtensions
+                        .CreatePanicExceptionForErr($"Result is uninitialized. You cannot obtain the Err value.", _err);
                 }
+
                 return _err;
             }
         }
@@ -194,7 +199,7 @@ namespace Ruzzie.Common.Types
             return res.Err();
         }
 
-        public static implicit operator Result<TError, T>(in T ok) => new Result<TError, T>(ok);
+        public static implicit operator Result<TError, T>(in T      ok)  => new Result<TError, T>(ok);
         public static implicit operator Result<TError, T>(in TError err) => new Result<TError, T>(err);
 
         public static Result<TError, T> Ok(in T value)
@@ -225,6 +230,7 @@ namespace Ruzzie.Common.Types
             {
                 return Option<TError>.Some(ErrValue);
             }
+
             return Option<TError>.None;
         }
 
@@ -238,9 +244,9 @@ namespace Ruzzie.Common.Types
 
             return _variant switch
             {
-                ResultVariant.Ok => EqualityComparer<T>.Default.Equals(_value, other._value),
-                ResultVariant.Err => EqualityComparer<TError>.Default.Equals(_err, other._err),
-                _ => (_initialized == other._initialized && _variant == other._variant &&
+                ResultVariant.Ok  => EqualityComparer<T>.Default.Equals(_value, other._value)
+              , ResultVariant.Err => EqualityComparer<TError>.Default.Equals(_err, other._err)
+              , _ => (_initialized == other._initialized                       && _variant == other._variant &&
                       EqualityComparer<T>.Default.Equals(_value, other._value) &&
                       EqualityComparer<TError>.Default.Equals(_err, other._err))
             };
@@ -291,7 +297,7 @@ namespace Ruzzie.Common.Types
             return IsOk ? onOk(_value) : onErr(ErrValue);
         }
 
-        public unsafe TU Match<TU>(delegate*<in TError, TU> onErr,  delegate*<in T, TU> onOk)
+        public unsafe TU Match<TU>(delegate*<in TError, TU> onErr, delegate*<in T, TU> onOk)
         {
             return IsOk ? onOk(_value) : onErr(ErrValue);
         }
@@ -318,8 +324,8 @@ namespace Ruzzie.Common.Types
         public Result<TF, TU> Map<TF, TU>(Func<TError, TF> selectErr, Func<T, TU> selectOk)
         {
             return IsOk
-                ? Result<TF, TU>.Ok(selectOk(_value))
-                : Result<TF, TU>.Err(selectErr(ErrValue));
+                       ? Result<TF, TU>.Ok(selectOk(_value))
+                       : Result<TF, TU>.Err(selectErr(ErrValue));
         }
 
         /// <summary>
@@ -407,7 +413,7 @@ namespace Ruzzie.Common.Types
         ///Calls op if the result is Err, otherwise returns the Ok value of self.
         ///    This function can be used for control flow based on result values.
         /// </summary>
-        public Result<TF, T> OrElse<TF>(OnErr<Result<TF, T> , TError> op)
+        public Result<TF, T> OrElse<TF>(OnErr<Result<TF, T>, TError> op)
         {
             return IsOk ? Result<TF, T>.Ok(_value) : op(ErrValue);
         }
@@ -445,6 +451,41 @@ namespace Ruzzie.Common.Types
             }
 
             return secondResult._err;
+        }
+
+        /// <summary>
+        ///Joins two results to a tuple of Ok values when both are Ok value, returns the first error otherwise.
+        ///  This function can be used to compose results.
+        /// </summary>
+        public unsafe Result<TError, (T, TU)> AndJoinOk<TU>(delegate*<Result<TError, TU>> secondAction)
+        {
+            if (!IsOk)
+            {
+                return _err;
+            }
+
+            var secondResult = secondAction();
+
+            if (secondResult.IsOk)
+            {
+                return (_value, secondResult._value);
+            }
+
+            return secondResult._err;
+        }
+
+        /// <summary>
+        ///Joins two results to a tuple of Ok values when both are Ok value, returns the first error otherwise.
+        ///  This function can be used to compose results.
+        /// </summary>
+        public Result<TError, (T, TU)> AndJoinOk<TU>(Func<Result<TError, TU>> secondAction)
+        {
+            if (!IsOk)
+            {
+                return _err;
+            }
+
+            return MapOk2(secondAction(), (f, s) => (f, s));
         }
 
         /// <inheritdoc/>
@@ -517,12 +558,27 @@ namespace Ruzzie.Common.Types
         {
             if (IsOk)
             {
-                okValue = _value;
+                okValue  = _value;
                 errValue = Option<TError>.None;
                 return (false, true);
             }
 
             okValue  = Option<T>.None;
+            errValue = ErrValue;
+            return (true, false);
+        }
+        
+        /// experimental
+        public (bool isError, bool isOk) GetValue(out T okValue,  T okDefault, out TError errValue, TError errDefault)
+        {
+            if (IsOk)
+            {
+                okValue  = _value;
+                errValue = errDefault;
+                return (false, true);
+            }
+
+            okValue  = okDefault;
             errValue = ErrValue;
             return (true, false);
         }
@@ -554,8 +610,9 @@ namespace Ruzzie.Common.Types
 
         private enum ResultVariant : byte
         {
-            Ok = 1,
-            Err = 0,
+            Ok  = 1
+          , Err = 0
+           ,
         }
 
         private const string VariantFieldName = "variant";
@@ -584,15 +641,15 @@ namespace Ruzzie.Common.Types
             if (_variant == ResultVariant.Ok)
             {
                 //note: decide on whether to panic or leave this as is, since it is possible that the caller intended to serialize a null value
-                _value = (T?)serializationInfo.GetValue(ValueFieldName, typeof(T))!;
-                _err = default!;
+                _value       = (T?)serializationInfo.GetValue(ValueFieldName, typeof(T))!;
+                _err         = default!;
                 _initialized = true;
             }
             else
             {
                 //note: decide on whether to panic or leave this as is, since it is possible that the caller intended to serialize a null value
-                _err = (TError?)serializationInfo.GetValue(ErrFieldName, typeof(TError))!;
-                _value = default!;
+                _err         = (TError?)serializationInfo.GetValue(ErrFieldName, typeof(TError))!;
+                _value       = default!;
                 _initialized = true;
             }
         }

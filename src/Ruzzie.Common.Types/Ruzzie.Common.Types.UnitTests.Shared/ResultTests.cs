@@ -14,7 +14,7 @@ namespace Ruzzie.Common.Types.UnitTests
         {
             var x = Result.Ok<string, uint>(2);
             var y = Result.Ok<string, uint>(3);
-            Assert.AreEqual(x.JoinOk(y), Result.Ok<string, (uint, uint)>((2,3)));
+            Assert.AreEqual(x.JoinOk(y), Result.Ok<string, (uint, uint)>((2, 3)));
         }
 
         [Test]
@@ -34,11 +34,33 @@ namespace Ruzzie.Common.Types.UnitTests
         }
 
         [Test]
+        public void AndJoinOk_Ok()
+        {
+            var x = Result.Ok<string, uint>(2);
+            Assert.AreEqual(x.AndJoinOk(() => Result.Ok<string, uint>(3)), Result.Ok<string, (uint, uint)>((2, 3)));
+        }
+
+        [Test]
+        public void AndJoinOk_FirstIsErr()
+        {
+            var x = Result.Err<string, uint>("first");
+            Assert.AreEqual(x.AndJoinOk(() => Result.Ok<string, uint>(3)), Result.Err<string, (uint, uint)>("first"));
+        }
+
+        [Test]
+        public void AndJoinOk_SecondIsErr()
+        {
+            var x = Result.Ok<string, uint>(2);
+            Assert.AreEqual(x.AndJoinOk(() => Result.Err<string, uint>("second"))
+                          , Result.Err<string, (uint, uint)>("second"));
+        }
+
+        [Test]
         public void MapOk2_Ok()
         {
             var x = Result.Ok<string, uint>(2);
             var y = Result.Ok<string, uint>(3);
-            Assert.AreEqual(x.MapOk2(y, (a, b) => (a,b)), Result.Ok<string, (uint, uint)>((2,3)));
+            Assert.AreEqual(x.MapOk2(y, (a, b) => (a, b)), Result.Ok<string, (uint, uint)>((2, 3)));
         }
 
         [Test]
@@ -46,7 +68,7 @@ namespace Ruzzie.Common.Types.UnitTests
         {
             var x = Result.Err<string, uint>("first");
             var y = Result.Ok<string, uint>(3);
-            Assert.AreEqual(x.MapOk2(y, (a, b) => (a,b)), Result.Err<string, (uint, uint)>("first"));
+            Assert.AreEqual(x.MapOk2(y, (a, b) => (a, b)), Result.Err<string, (uint, uint)>("first"));
         }
 
         [Test]
@@ -54,7 +76,7 @@ namespace Ruzzie.Common.Types.UnitTests
         {
             var x = Result.Ok<string, uint>(2);
             var y = Result.Err<string, uint>("second");
-            Assert.AreEqual(x.MapOk2(y, (a, b) => (a,b)), Result.Err<string, (uint, uint)>("second"));
+            Assert.AreEqual(x.MapOk2(y, (a, b) => (a, b)), Result.Err<string, (uint, uint)>("second"));
         }
 
         [Test]
@@ -91,7 +113,7 @@ namespace Ruzzie.Common.Types.UnitTests
         public void Cannot_InferTypesWhenTypesAreTheSame_Ok()
         {
             //so use named parameter to indicate result type
-            var sutCtorOk = new Result<string, string>(ok: "OK!");
+            var sutCtorOk   = new Result<string, string>(ok: "OK!");
             var sutStaticOk = Result<string, string>.Ok("OK!");
 
             sutCtorOk.Should().BeEquivalentTo(sutStaticOk);
@@ -101,7 +123,7 @@ namespace Ruzzie.Common.Types.UnitTests
         public void Cannot_InferTypesWhenTypesAreTheSame_Err()
         {
             //so use named parameter to indicate result type
-            var sutCtorErr = new Result<string, string>(err: "ERR!");
+            var sutCtorErr   = new Result<string, string>(err: "ERR!");
             var sutStaticErr = Result<string, string>.Err("ERR!");
 
             sutCtorErr.Should().BeEquivalentTo(sutStaticErr);
@@ -151,11 +173,11 @@ namespace Ruzzie.Common.Types.UnitTests
         {
             string stringify(uint i) => $"error code: {i}";
 
-            var x = Result.Ok<uint,uint>(2);
+            var x = Result.Ok<uint, uint>(2);
             Assert.AreEqual(x.MapErr(stringify), Result.Ok<string, uint>(2));
 
-            x = Result.Err<uint,uint>(13);
-            Assert.AreEqual(x.MapErr(stringify), Result.Err<string,uint>("error code: 13"));
+            x = Result.Err<uint, uint>(13);
+            Assert.AreEqual(x.MapErr(stringify), Result.Err<string, uint>("error code: 13"));
         }
 
         [Test]
@@ -193,10 +215,10 @@ namespace Ruzzie.Common.Types.UnitTests
         [Test]
         public void AndThenExample()
         {
-            Result<uint, uint> sq(uint x) => Result.Ok<uint, uint>(x * x);
+            Result<uint, uint> sq(uint  x) => Result.Ok<uint, uint>(x * x);
             Result<uint, uint> err(uint x) => Result.Err<uint, uint>(x);
 
-            Assert.AreEqual(Result.Ok<uint, uint>(2).AndThen(sq).AndThen(sq), Result.Ok<uint, uint>(16));
+            Assert.AreEqual(Result.Ok<uint, uint>(2).AndThen(sq).AndThen(sq),  Result.Ok<uint, uint>(16));
             Assert.AreEqual(Result.Ok<uint, uint>(2).AndThen(sq).AndThen(err), Result.Err<uint, uint>(4));
             Assert.AreEqual(Result.Ok<uint, uint>(2).AndThen(err).AndThen(sq), Result.Err<uint, uint>(2));
             Assert.AreEqual(Result.Err<uint, uint>(3).AndThen(sq).AndThen(sq), Result.Err<uint, uint>(3));
@@ -218,10 +240,10 @@ namespace Ruzzie.Common.Types.UnitTests
         [Test]
         public void AndThen_In_Example()
         {
-            Result<uint, uint> sq(in uint  x) => Result.Ok<uint, uint>(x * x);
+            Result<uint, uint> sq(in  uint x) => Result.Ok<uint, uint>(x * x);
             Result<uint, uint> err(in uint x) => Result.Err<uint, uint>(x);
 
-            Assert.AreEqual(Result.Ok<uint, uint>(2).AndThen(sq).AndThen(sq), Result.Ok<uint, uint>(16));
+            Assert.AreEqual(Result.Ok<uint, uint>(2).AndThen(sq).AndThen(sq),  Result.Ok<uint, uint>(16));
             Assert.AreEqual(Result.Ok<uint, uint>(2).AndThen(sq).AndThen(err), Result.Err<uint, uint>(4));
             Assert.AreEqual(Result.Ok<uint, uint>(2).AndThen(err).AndThen(sq), Result.Err<uint, uint>(2));
             Assert.AreEqual(Result.Err<uint, uint>(3).AndThen(sq).AndThen(sq), Result.Err<uint, uint>(3));
@@ -306,12 +328,12 @@ namespace Ruzzie.Common.Types.UnitTests
         [Test]
         public void OrElseExample()
         {
-            Result<uint, uint> sq(uint x) => Result.Ok<uint, uint>(x * x);
+            Result<uint, uint> sq(uint  x) => Result.Ok<uint, uint>(x * x);
             Result<uint, uint> err(uint x) => Result.Err<uint, uint>(x);
 
-            Assert.AreEqual(Result.Ok<uint, uint>(2).OrElse(sq).OrElse(sq), Result.Ok<uint, uint>(2));
-            Assert.AreEqual(Result.Ok<uint, uint>(2).OrElse(err).OrElse(sq), Result.Ok<uint, uint>(2));
-            Assert.AreEqual(Result.Err<uint, uint>(3).OrElse(sq).OrElse(err), Result.Ok<uint, uint>(9));
+            Assert.AreEqual(Result.Ok<uint, uint>(2).OrElse(sq).OrElse(sq),    Result.Ok<uint, uint>(2));
+            Assert.AreEqual(Result.Ok<uint, uint>(2).OrElse(err).OrElse(sq),   Result.Ok<uint, uint>(2));
+            Assert.AreEqual(Result.Err<uint, uint>(3).OrElse(sq).OrElse(err),  Result.Ok<uint, uint>(9));
             Assert.AreEqual(Result.Err<uint, uint>(3).OrElse(err).OrElse(err), Result.Err<uint, uint>(3));
         }
 
@@ -319,7 +341,7 @@ namespace Ruzzie.Common.Types.UnitTests
         public void UnwrapOrExample()
         {
             uint optb = 2;
-            var x = Result.Ok<string, uint>(9);
+            var  x    = Result.Ok<string, uint>(9);
             Assert.AreEqual(x.UnwrapOr(optb), 9);
 
             var y = Result.Err<string, uint>("error");
@@ -331,8 +353,8 @@ namespace Ruzzie.Common.Types.UnitTests
         {
             int Count(string x) => x.Length;
 
-            Assert.AreEqual(Result.Ok<string,int>(2).UnwrapOrElse(Count), 2);
-            Assert.AreEqual(Result.Err<string,int>("foo").UnwrapOrElse(Count), 3);
+            Assert.AreEqual(Result.Ok<string, int>(2).UnwrapOrElse(Count),      2);
+            Assert.AreEqual(Result.Err<string, int>("foo").UnwrapOrElse(Count), 3);
         }
 
         [Test]
@@ -387,7 +409,7 @@ namespace Ruzzie.Common.Types.UnitTests
         public void ThrowsPanicExceptionWhenTryingToObtainErrValueOnDefaultResult()
         {
             Result<string, int> res = default;
-            Action act = ()=> res.Match(e => e, o => o.ToString());
+            Action              act = () => res.Match(e => e, o => o.ToString());
 
             act.Should().Throw<PanicException<string>>();
         }
@@ -404,7 +426,7 @@ namespace Ruzzie.Common.Types.UnitTests
         public void OpInEquality()
         {
             var err = Result.Err<int, string>(12);
-            var ok = Result.Ok<int, string>("12");
+            var ok  = Result.Ok<int, string>("12");
 
             (err != ok).Should().BeTrue();
         }
@@ -412,7 +434,7 @@ namespace Ruzzie.Common.Types.UnitTests
         [Test]
         public void OpInEqualityReferenceType()
         {
-            var left = new List<string> { "1", "2" }.AsOk<int, List<string>>();
+            var left  = new List<string> { "1", "2" }.AsOk<int, List<string>>();
             var right = new List<string> { "1", "2" }.AsOk<int, List<string>>();
 
             (left != right).Should().BeTrue();
@@ -421,7 +443,7 @@ namespace Ruzzie.Common.Types.UnitTests
         [Test]
         public void OpEquality()
         {
-            var left = "12".AsOk<int, string>();
+            var left  = "12".AsOk<int, string>();
             var right = "12".AsOk<int, string>();
 
             (left == right).Should().BeTrue();
@@ -446,11 +468,11 @@ namespace Ruzzie.Common.Types.UnitTests
         [Test]
         public void GetHashCodeReturnsZeroWhenNotInitialized()
         {
-            #if CS8
+#if CS8
             var right = default(Result<int, string>)!;
-            #else
+#else
             var right = default(Result<int, string>);
-            #endif
+#endif
 
             right.GetHashCode().Should().Be(0);
         }
@@ -458,11 +480,11 @@ namespace Ruzzie.Common.Types.UnitTests
         [Test]
         public void GetHashCodeReturnsZeroWhenIsErrValueIsNull()
         {
-            #if CS8
+#if CS8
             var result = Result<string, string>.Err(null!);
-            #else
+#else
             var result = Result<string, string>.Err(null);
-            #endif
+#endif
 
             result.GetHashCode().Should().Be(0);
         }
@@ -470,11 +492,11 @@ namespace Ruzzie.Common.Types.UnitTests
         [Test]
         public void GetHashCodeReturnsZeroWhenIsOkValueIsNull()
         {
-            #if CS8
+#if CS8
             var result = Result<string, string>.Ok(null!);
-            #else
+#else
             var result = Result<string, string>.Ok(null);
-            #endif
+#endif
 
             result.GetHashCode().Should().Be(0);
         }
@@ -491,8 +513,8 @@ namespace Ruzzie.Common.Types.UnitTests
         [Test]
         public void OpEqualityReferenceType()
         {
-            var list = new List<string> { "1", "2" };
-            var left = list.AsOk<int, List<string>>();
+            var list  = new List<string> { "1", "2" };
+            var left  = list.AsOk<int, List<string>>();
             var right = list.AsOk<int, List<string>>();
 
             (left == right).Should().BeTrue();
@@ -503,16 +525,17 @@ namespace Ruzzie.Common.Types.UnitTests
         {
             return x;
         }
+
         public static IEnumerable<Result<string, int>[]> BifunctorLawsData
         {
             get
             {
-                yield return new[] {new Result<string, int>("foo")};
-                yield return new[] {new Result<string, int>("bar")};
-                yield return new[] {new Result<string, int>("baz")};
-                yield return new[] {new Result<string, int>(42)};
-                yield return new[] {new Result<string, int>(1337)};
-                yield return new[] {new Result<string, int>(0)};
+                yield return new[] { new Result<string, int>("foo") };
+                yield return new[] { new Result<string, int>("bar") };
+                yield return new[] { new Result<string, int>("baz") };
+                yield return new[] { new Result<string, int>(42) };
+                yield return new[] { new Result<string, int>(1337) };
+                yield return new[] { new Result<string, int>(0) };
                 //yield return new[] {default(Result<string, int>)};
             }
         }
@@ -538,32 +561,32 @@ namespace Ruzzie.Common.Types.UnitTests
         [Theory, TestCaseSource(nameof(BifunctorLawsData))]
         public void ConsistencyLawHolds(Result<string, int> e)
         {
-            bool f(string s) => string.IsNullOrWhiteSpace(s);
-            DateTime g(int i) => new DateTime(i);
+            bool     f(string s) => string.IsNullOrWhiteSpace(s);
+            DateTime g(int    i) => new DateTime(i);
 
             Assert.AreEqual(e.Map(f, g), e.MapOk(g).MapErr(f));
             Assert.AreEqual(
-                e.MapLeft(f).MapRight(g),
-                e.MapRight(g).MapLeft(f));
+                            e.MapLeft(f).MapRight(g)
+                          , e.MapRight(g).MapLeft(f));
         }
 
         [Theory, TestCaseSource(nameof(BifunctorLawsData))]
         public void ConsistencyLawHolds(IEitherValueType<string, int> e)
         {
-            bool f(string s) => string.IsNullOrWhiteSpace(s);
-            DateTime g(int i) => new DateTime(i);
+            bool     f(string s) => string.IsNullOrWhiteSpace(s);
+            DateTime g(int    i) => new DateTime(i);
 
             Assert.AreEqual(e.Map(f, g), e.MapRight(g).MapLeft(f));
             Assert.AreEqual(
-                e.MapLeft(f).MapRight(g),
-                e.MapRight(g).MapLeft(f));
+                            e.MapLeft(f).MapRight(g)
+                          , e.MapRight(g).MapLeft(f));
         }
 
         [Theory, TestCaseSource(nameof(BifunctorLawsData))]
         public void SecondFunctorLawHoldsForMapErr(Result<string, int> e)
         {
-            bool f(int x) => x % 2 == 0;
-            int g(string s) => s.Length;
+            bool f(int    x) => x % 2 == 0;
+            int  g(string s) => s.Length;
 
             Assert.AreEqual(e.MapErr(x => f(g(x))), e.MapErr(g).MapErr(f));
         }
@@ -571,8 +594,8 @@ namespace Ruzzie.Common.Types.UnitTests
         [Theory, TestCaseSource(nameof(BifunctorLawsData))]
         public void SecondFunctorLawHoldsForMapLeft(IEitherValueType<string, int> e)
         {
-            bool f(int x) => x % 2 == 0;
-            int g(string s) => s.Length;
+            bool f(int    x) => x % 2 == 0;
+            int  g(string s) => s.Length;
 
             Assert.AreEqual(e.MapLeft(x => f(g(x))), e.MapLeft(g).MapLeft(f));
         }
@@ -581,7 +604,7 @@ namespace Ruzzie.Common.Types.UnitTests
         public void SecondFunctorLawHoldsForMapOk(Result<string, int> e)
         {
             char f(bool b) => b ? 'T' : 'F';
-            bool g(int i) => i % 2 == 0;
+            bool g(int  i) => i % 2 == 0;
 
             Assert.AreEqual(e.MapOk(x => f(g(x))), e.MapOk(g).MapOk(f));
         }
@@ -590,7 +613,7 @@ namespace Ruzzie.Common.Types.UnitTests
         public void SecondFunctorLawHoldsForMapRight(IEitherValueType<string, int> e)
         {
             char f(bool b) => b ? 'T' : 'F';
-            bool g(int i) => i % 2 == 0;
+            bool g(int  i) => i % 2 == 0;
 
             Assert.AreEqual(e.MapRight(x => f(g(x))), e.MapRight(g).MapRight(f));
         }
@@ -598,27 +621,27 @@ namespace Ruzzie.Common.Types.UnitTests
         [Theory, TestCaseSource(nameof(BifunctorLawsData))]
         public void MapCompositionLawHolds(Result<string, int> e)
         {
-            bool f(int x) => x % 2 == 0;
-            int g(string s) => s.Length;
-            char h(bool b) => b ? 'T' : 'F';
-            bool i(int x) => x % 2 == 0;
+            bool f(int    x) => x % 2 == 0;
+            int  g(string s) => s.Length;
+            char h(bool   b) => b ? 'T' : 'F';
+            bool i(int    x) => x % 2 == 0;
 
             Assert.AreEqual(
-                e.Map(x => f(g(x)), y => h(i(y))),
-                e.Map(g, i).Map(f, h));
+                            e.Map(x => f(g(x)), y => h(i(y)))
+                          , e.Map(g,            i).Map(f, h));
         }
 
         [Theory, TestCaseSource(nameof(BifunctorLawsData))]
         public void MapCompositionLawHolds(IEitherValueType<string, int> e)
         {
-            bool f(int x) => x % 2 == 0;
-            int g(string s) => s.Length;
-            char h(bool b) => b ? 'T' : 'F';
-            bool i(int x) => x % 2 == 0;
+            bool f(int    x) => x % 2 == 0;
+            int  g(string s) => s.Length;
+            char h(bool   b) => b ? 'T' : 'F';
+            bool i(int    x) => x % 2 == 0;
 
             Assert.AreEqual(
-                e.Map(x => f(g(x)), y => h(i(y))),
-                e.Map(g, i).Map(f, h));
+                            e.Map(x => f(g(x)), y => h(i(y)))
+                          , e.Map(g,            i).Map(f, h));
         }
     }
 }
