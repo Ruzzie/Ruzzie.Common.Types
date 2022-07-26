@@ -38,7 +38,7 @@ namespace Ruzzie.Common.Types
         Option<IError> Source { get; }
     }
 
-    public interface IError<out TKind> : IError where TKind : Enum
+    public interface IError<out TKind> : IError where TKind : struct, Enum
     {
         TKind ErrorKind { get; }
     }
@@ -114,7 +114,7 @@ namespace Ruzzie.Common.Types
     }
 
     [DebuggerDisplay("{" + nameof(ErrorKind) + "}:{"+nameof(Message)+"}")]
-    public class Error<TKind> : IError<TKind> where TKind: Enum
+    public class Error<TKind> : IError<TKind> where TKind: struct, Enum
     {
         public Error(TKind errorKind) : this(Enum.Format(typeof(TKind), errorKind, "d"), errorKind)
         {
@@ -150,7 +150,7 @@ namespace Ruzzie.Common.Types
     }
 
     [DebuggerDisplay("{" + nameof(ErrorKind) + "}:{"+nameof(Message)+"}")]
-    public class Error<TKind, TException> : IError<TKind>, IHasExceptionSource<TException> where TException : Exception where TKind: Enum
+    public class Error<TKind, TException> : IError<TKind>, IHasExceptionSource<TException> where TException : Exception where TKind: struct, Enum
     {
         public Error(TKind errorKind,  Option<IError> source) : this(Enum.Format(typeof(TKind), errorKind, "d"), errorKind, source)
         {
@@ -203,7 +203,7 @@ namespace Ruzzie.Common.Types
     }
 
     [DebuggerDisplay("{" + nameof(ErrorKind) + "}:{" + nameof(Message) + "}")]
-    public readonly struct Err<TKind> : IError<TKind>, IEquatable<Err<TKind>> where TKind : Enum
+    public readonly struct Err<TKind> : IError<TKind>, IEquatable<Err<TKind>> where TKind : struct, Enum
     {
         public string Message { get; }
         public Option<IError> Source { get; }
@@ -270,7 +270,7 @@ namespace Ruzzie.Common.Types
     }
 
     [DebuggerDisplay("{" + nameof(ErrorKind) + "}:{"+nameof(Message)+"}")]
-    public readonly struct Err<TKind, TException> : IError<TKind>, IHasExceptionSource<TException>, IEquatable<Err<TKind, TException>> where TException : Exception where TKind : Enum
+    public readonly struct Err<TKind, TException> : IError<TKind>, IHasExceptionSource<TException>, IEquatable<Err<TKind, TException>> where TException : Exception where TKind : struct, Enum
     {
         public string Message { get; }
         public Option<IError> Source { get; }

@@ -152,7 +152,10 @@ namespace Ruzzie.Common.Types.UnitTests
         [Test]
         public void EqualsNullAsOptionTypeTest()
         {
-            Option<int> optionA = null;
+            Option<int> optionA = null!; // suppress warning with ! 
+                                         // imo the compiler should give an
+                                         //  error. But since this is a valid
+                                         //  construct we will test it.
             Option<int> optionB = 23;
 
             optionA.Equals(optionB).Should().BeFalse();

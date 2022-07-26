@@ -108,11 +108,7 @@ namespace Ruzzie.Common.Types.UnitTests
                 yield return new[] {new Right<string, int>(42)};
                 yield return new[] {new Right<string, int>(1337)};
                 yield return new[] {new Right<string, int>(0)};
-                #if CS8
                 yield return new[] {new Left<string, int>(null!)};
-                #else
-                yield return new[] {new Left<string, int>(null)};
-                #endif
             }
         }
 

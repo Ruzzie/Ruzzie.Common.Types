@@ -480,11 +480,7 @@ namespace Ruzzie.Common.Types.UnitTests
         [Test]
         public void GetHashCodeReturnsZeroWhenIsErrValueIsNull()
         {
-#if CS8
             var result = Result<string, string>.Err(null!);
-#else
-            var result = Result<string, string>.Err(null);
-#endif
 
             result.GetHashCode().Should().Be(0);
         }
@@ -492,11 +488,7 @@ namespace Ruzzie.Common.Types.UnitTests
         [Test]
         public void GetHashCodeReturnsZeroWhenIsOkValueIsNull()
         {
-#if CS8
             var result = Result<string, string>.Ok(null!);
-#else
-            var result = Result<string, string>.Ok(null);
-#endif
 
             result.GetHashCode().Should().Be(0);
         }
