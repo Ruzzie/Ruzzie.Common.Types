@@ -10,6 +10,33 @@ namespace Ruzzie.Common.Types.UnitTests
     public class ResultTests
     {
         [Test]
+        public void IsOk_True()
+        {
+            var result = new Result<string, int>(ok: 42);
+
+            Assert.AreEqual(result.IsOk(out int okValue, out _, 0, ""), true);
+            Assert.AreEqual(okValue,                                    42);
+        }
+
+        [Test]
+        public void IsError_True()
+        {
+            var result = new Result<string, int>(err: "error");
+
+            Assert.AreEqual(result.IsErr(out _, out string errValue, 0, ""), true);
+            Assert.AreEqual(errValue,                                        "error");
+        }
+
+        [Test]
+        public void IsOk_PanicWhenNotInitialized()
+        {
+            var result = default(Result<string, int>);
+
+            Assert.Throws<PanicException<string>>(() => result.IsOk(out _, out _, 0, ""));
+        }
+
+
+        [Test]
         public void JoinOk_Ok()
         {
             var x = Result.Ok<string, uint>(2);
@@ -106,7 +133,7 @@ namespace Ruzzie.Common.Types.UnitTests
         {
             var result = new Result<int, double>(2.2);
 
-            result.Match((in int err) => true, (in double ok) => false).Should().BeFalse();
+            result.Match((in int _) => true, (in double _) => false).Should().BeFalse();
         }
 
         [Test]
@@ -156,7 +183,7 @@ namespace Ruzzie.Common.Types.UnitTests
         public void ForErr()
         {
             var sut = new Result<string, int>("foo");
-            sut.For(s => Assert.AreEqual("foo", s), i => Assert.Fail("Err expected"));
+            sut.For(s => Assert.AreEqual("foo", s), _ => Assert.Fail("Err expected"));
         }
 
         [Test]
@@ -419,7 +446,7 @@ namespace Ruzzie.Common.Types.UnitTests
         {
             Result<string, int> res = default;
 
-            res.IsErr.Should().BeTrue();
+            res.IsErr().Should().BeTrue();
         }
 
         [Test]
@@ -468,13 +495,9 @@ namespace Ruzzie.Common.Types.UnitTests
         [Test]
         public void GetHashCodeReturnsZeroWhenNotInitialized()
         {
-#if CS8
-            var right = default(Result<int, string>)!;
-#else
-            var right = default(Result<int, string>);
-#endif
+            var result = default(Result<int, string>);
 
-            right.GetHashCode().Should().Be(0);
+            result.GetHashCode().Should().Be(0);
         }
 
         [Test]

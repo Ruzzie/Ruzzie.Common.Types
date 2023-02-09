@@ -13,6 +13,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ruzzie.Common.Types.Benchma
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ruzzie.Common.Types.UnitTests", "Ruzzie.Common.Types.UnitTests\Ruzzie.Common.Types.UnitTests.csproj", "{DCC8610C-4233-4512-BED9-B234473F1469}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{A7226B7D-4629-401A-8E29-EDF07875061F}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\README.md = ..\..\README.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		Ruzzie.Common.Types.UnitTests.Shared\Ruzzie.Common.Types.UnitTests.Shared.projitems*{1abf7a34-bb2d-497c-84fd-9d5c1bdeb6f0}*SharedItemsImports = 13

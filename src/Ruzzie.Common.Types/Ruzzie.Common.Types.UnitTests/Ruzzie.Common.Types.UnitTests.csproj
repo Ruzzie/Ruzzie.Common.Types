@@ -5,6 +5,7 @@
         <Nullable>enable</Nullable>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <IsPackable>false</IsPackable>
+        <LangVersion>default</LangVersion>
     </PropertyGroup>
 
     <ItemGroup>
