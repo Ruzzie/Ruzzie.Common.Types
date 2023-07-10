@@ -1,118 +1,78 @@
 ﻿using FluentAssertions;
 using NUnit.Framework;
 
-namespace Ruzzie.Common.Types.UnitTests.Serialization
+namespace Ruzzie.Common.Types.UnitTests.Serialization;
+
+[TestFixture]
+//[Ignore("Proper serialization feature is not implemented yes")]
+public class OptionSerializationTests
 {
-    [TestFixture, Ignore("Proper serialization feature is not implemented yes")]
-    public class OptionSerializationTests
+    [Test]
+    public void SerializeWithDataContractSerializer_SimpleType_Some()
     {
-        [Test]
-        public void SerializeToDefaultBinaryFormat_SimpleType_Some()
-        {
-            var option = Option<string>.Some("Simple string option with some value.");
+        var option = Option<string>.Some("Simple string option with some value.");
+        option.AssertDefaultDataContractSerializationSuccessForValueType();
+    }
 
-            option.AssertDefaultBinarySerializationSuccessForValueType();
-        }
+    [Test]
+    public void SerializeWithDataContractSerializer_SimpleType_None()
+    {
+        var option = Option<string>.None;
 
-        [Test]
-        public void SerializeToDefaultBinaryFormat_SimpleType_None()
-        {
-            var option = Option<string>.None;
-            option.AssertDefaultBinarySerializationSuccessForValueType();
-        }
+        option.AssertDefaultDataContractSerializationSuccessForValueType();
+    }
 
-        [Test]
-        public void SerializeWithDataContractSerializer_SimpleType_Some()
-        {
-            var option = Option<string>.Some("Simple string option with some value.");
-            option.AssertDefaultDataContractSerializationSuccessForValueType();
-        }
+    [Test]
+    public void SerializeWithNewtonSoftJsonSerializer_SimpleType_Some()
+    {
+        var option = Option<string>.Some("Simple string option with some value.");
 
-        [Test]
-        public void SerializeWithDataContractSerializer_SimpleType_None()
-        {
-            var option = Option<string>.None;
+        option.AssertNewtonsoftJsonSerializationSuccessForValueType();
+    }
 
-            option.AssertDefaultDataContractSerializationSuccessForValueType();
-        }
+    [Test]
+    public void SerializeWithNewtonSoftJsonSerializer_SimpleType_None()
+    {
+        var option = Option<string>.None;
 
-        [Test]
-        public void SerializeWithNewtonSoftJsonSerializer_SimpleType_Some()
-        {
-            var option = Option<string>.Some("Simple string option with some value.");
+        option.AssertNewtonsoftJsonSerializationSuccessForValueType();
+    }
 
-            option.AssertNewtonsoftJsonSerializationSuccessForValueType();
-        }
+    [Test]
+    public void SerializeWithNewtonSoftJsonSerializer_SimpleType_Some_Nested()
+    {
+        var option = Option<Option<string>>.Some(Option<string>.Some("Nested value!"));
 
-        [Test]
-        public void SerializeWithNewtonSoftJsonSerializer_SimpleType_None()
-        {
-            var option = Option<string>.None;
+        var deserializedOption = option.AssertNewtonsoftJsonSerializationSuccessForValueType();
 
-            option.AssertNewtonsoftJsonSerializationSuccessForValueType();
-        }
+        deserializedOption.UnwrapOr(Option<string>.None).UnwrapOr(string.Empty).Should().Be("Nested value!");
+    }
 
-        [Test]
-        public void SerializeWithNewtonSoftJsonSerializer_SimpleType_Some_Nested()
-        {
-            var option = Option<Option<string>>.Some(Option<string>.Some("Nested value!"));
+    [Test]
+    [Ignore("Todo system.text json serializer solution / module")]
+    public void SerializeWithSystemTextJsonSerializer_SimpleType_Some()
+    {
+        var option = Option<string>.Some("Simple string option with some value.");
 
-            var deserializedOption = option.AssertNewtonsoftJsonSerializationSuccessForValueType();
+        option.AssertSystemTextJsonSerializationSuccessForValueType();
+    }
 
-            deserializedOption.UnwrapOr(Option<string>.None).UnwrapOr(string.Empty).Should().Be("Nested value!");
-        }
+    [Test]
+    public void SerializeWithSystemTextJsonSerializer_SimpleType_None()
+    {
+        var option = Option<string>.None;
 
+        option.AssertSystemTextJsonSerializationSuccessForValueType();
+    }
 
-        [Test]
-        public void SerializeWithSystemTextJsonSerializer_SimpleType_Some()
-        {
-            var option = Option<string>.Some("Simple string option with some value.");
+    [Test]
+    [Ignore("Todo system.text json serializer solution / module")]
+    public void SerializeWithSystemTextJsonSerializer_SimpleType_Some_Nested()
+    {
+        var option = Option<Option<string>>.Some(Option<string>.Some("Nested value!"));
 
-            option.AssertSystemTextJsonSerializationSuccessForValueType();
-        }
+        var deserializedOption = option.AssertSystemTextJsonSerializationSuccessForValueType();
 
-        [Test]
-        public void SerializeWithSystemTextJsonSerializer_SimpleType_None()
-        {
-            var option = Option<string>.None;
-
-            option.AssertSystemTextJsonSerializationSuccessForValueType();
-        }
-
-        [Test]
-        public void SerializeWithSystemTextJsonSerializer_SimpleType_Some_Nested()
-        {
-            var option = Option<Option<string>>.Some(Option<string>.Some("Nested value!"));
-
-            var deserializedOption = option.AssertSystemTextJsonSerializationSuccessForValueType();
-
-            deserializedOption.UnwrapOr(Option<string>.None).UnwrapOr(string.Empty).Should().Be("Nested value!");
-        }
-
-        [Test]
-        public void SerializeWithJilJsonSerializer_SimpleType_Some()
-        {
-            var option = Option<string>.Some("Simple string option with some value.");
-
-            option.AssertJilJsonSerializationSuccessForValueType();
-        }
-
-        [Test]
-        public void SerializeWithJilJsonSerializer_SimpleType_None()
-        {
-            var option = Option<string>.None;
-
-            option.AssertJilJsonSerializationSuccessForValueType();
-        }
-
-        [Test]
-        public void SerializeWithJilJsonSerializer_SimpleType_Some_Nested()
-        {
-            var option = Option<Option<string>>.Some(Option<string>.Some("Nested value!"));
-
-            var deserializedOption = option.AssertJilJsonSerializationSuccessForValueType();
-
-            deserializedOption.UnwrapOr(Option<string>.None).UnwrapOr(string.Empty).Should().Be("Nested value!");
-        }
+        deserializedOption.UnwrapOr(Option<string>.None).UnwrapOr(string.Empty).Should().Be("Nested value!");
     }
 }

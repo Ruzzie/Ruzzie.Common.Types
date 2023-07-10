@@ -1,18 +1,33 @@
-﻿using System;
-#nullable enable
+﻿#nullable enable
+using System;
+using System.Diagnostics.CodeAnalysis;
+using System.Runtime.ExceptionServices;
+
 namespace Ruzzie.Common.Types;
 
 public static class ResultPanicExtensions
 {
-    internal static PanicException<TError> CreatePanicExceptionForErr<TError>(FormattableString message, in TError error)
+    internal static PanicException<TError> CreatePanicExceptionForErr<TError>(
+        FormattableString message
+      , in TError         error)
     {
         var errMsg = FormattableString.Invariant($"{FormattableString.Invariant(message)}: {error?.ToString()}");
 
         if (error is IHasBaseException hasBase)
         {
-            if(hasBase.BaseException.TryGetValue(out var innerEx))
-                return new PanicException<TError>(error, errMsg, innerEx!);
+            if (hasBase.BaseException.TryGetValue(out var innerEx))
+            {
+                var panicExceptionForErr = new PanicException<TError>(error, errMsg, innerEx!);
+
+                if (innerEx?.StackTrace != null)
+                {
+                    ExceptionDispatchInfo.SetRemoteStackTrace(panicExceptionForErr, innerEx.StackTrace);
+                }
+
+                return panicExceptionForErr;
+            }
         }
+
 
         return new PanicException<TError>(error, errMsg);
     }
@@ -26,13 +41,17 @@ public static class ResultPanicExtensions
     {
         unsafe
         {
-            return self.Match(&OnErrorThrowPanicException<TError,T>, &PassValue);
+            return self.Match(&ThrowPanicExceptionForGivenError<TError, T>, &PassValue);
         }
     }
 
-    private static T OnErrorThrowPanicException<TError, T>(in TError e)
+    private static T ThrowPanicExceptionForGivenError<TError, T>(in TError e)
     {
-        throw CreatePanicExceptionForErr($"called `{nameof(Unwrap)}` on an `Error` value", e);
+        // will throw
+        ExceptionDispatchInfo.Throw(CreatePanicExceptionForErr($"called `{nameof(Unwrap)}` on an `Error` value", e));
+
+        // wil never return
+        return default;
     }
 
     private static T PassValue<T>(in T value)
@@ -45,13 +64,17 @@ public static class ResultPanicExtensions
     /// </summary>
     /// <exception cref="PanicException{TError}">Panics if the value is an Err, with a panic message including the passed message and the content of the Err.</exception>
     /// <remarks>Beware this can throw an Exception. Best used in test scenario's</remarks>
-    public static T Expect<TError,T>(this Result<TError,T> self, string message)
+    public static T Expect<TError, T>(this Result<TError, T> self, string message)
     {
         return self.Match(OnErrorExpectFail, PassValue);
 
+        [DoesNotReturn]
         T OnErrorExpectFail(in TError e)
         {
-            throw CreatePanicExceptionForErr($"{message}", e);
+            //this will throw the exception and not return
+            ExceptionDispatchInfo.Throw(CreatePanicExceptionForErr($"{message}", e));
+
+            return default;
         }
     }
 
@@ -69,7 +92,11 @@ public static class ResultPanicExtensions
 
         static TError OnOkFail(in T ok)
         {
-            throw CreatePanicExceptionForErr($"called `{nameof(UnwrapError)}` on an `Ok` value", ok);
+            //this will throw the exception and not return
+            ExceptionDispatchInfo.Throw(CreatePanicExceptionForErr($"called `{nameof(UnwrapError)}` on an `Ok` value"
+                                                                 , ok));
+
+            return default;
         }
     }
 
@@ -86,7 +113,8 @@ public static class ResultPanicExtensions
 
         TError OnOkFail(in T ok)
         {
-            throw CreatePanicExceptionForErr($"{message}", ok);
+            ExceptionDispatchInfo.Throw(CreatePanicExceptionForErr($"{message}", ok));
+            return default;
         }
     }
 }

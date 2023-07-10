@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 
 namespace Ruzzie.Common.Types;
@@ -41,17 +41,15 @@ public delegate TU OnOk<out TU, T>(in T ok);
 /// This such that chaining and composing results that are ok should work with the default.
 /// </remarks>
 [Serializable]
-public readonly struct Result<TError, TOk> : IEitherValueType<TError, TOk>, IEquatable<Result<TError, TOk>>
-                                           , ISerializable
+public readonly record struct Result<TError, TOk> : ISerializable
 {
-    private readonly bool          _initialized;
-    private readonly ResultVariant _variant;
-    private readonly TOk           _value;
+    private const    string        VariantFieldName = "variant";
+    private const    string        ValueFieldName   = "ok";
+    private const    string        ErrFieldName     = "err";
     private readonly TError        _err;
-
-    public bool IsOk() => _variant == ResultVariant.Ok;
-
-    public bool IsErr() => _variant == ResultVariant.Err;
+    private readonly bool          _initialized;
+    private readonly TOk           _value;
+    private readonly ResultVariant _variant;
 
     /// <summary>
     /// Gets the error value.
@@ -90,6 +88,53 @@ public readonly struct Result<TError, TOk> : IEitherValueType<TError, TOk>, IEqu
     {
     }
 
+    //Deserialize
+    private Result(SerializationInfo serializationInfo, StreamingContext streamingContext)
+    {
+        _variant = (ResultVariant)serializationInfo.GetByte(VariantFieldName);
+        if (_variant == ResultVariant.Ok)
+        {
+            //note: decide on whether to panic or leave this as is, since it is possible that the caller intended to serialize a null value
+            _value       = (TOk?)serializationInfo.GetValue(ValueFieldName, typeof(TOk))!;
+            _err         = default!;
+            _initialized = true;
+        }
+        else
+        {
+            //note: decide on whether to panic or leave this as is, since it is possible that the caller intended to serialize a null value
+            _err         = (TError?)serializationInfo.GetValue(ErrFieldName, typeof(TError))!;
+            _value       = default!;
+            _initialized = true;
+        }
+    }
+
+    //Serialize
+    /// <inheritdoc />
+    public void GetObjectData(SerializationInfo info, StreamingContext context)
+    {
+        info.AddValue(VariantFieldName, (byte)_variant);
+        if (IsOk())
+        {
+            info.AddValue(ValueFieldName, _value);
+        }
+        else
+        {
+            info.AddValue(ErrFieldName, _err);
+        }
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public bool IsOk()
+    {
+        return _variant == ResultVariant.Ok;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public bool IsErr()
+    {
+        return _variant == ResultVariant.Err;
+    }
+
     /// <summary>
     /// Deconstruct a Result to a tuple of options.
     /// </summary>
@@ -108,8 +153,15 @@ public readonly struct Result<TError, TOk> : IEitherValueType<TError, TOk>, IEqu
         return res.Err();
     }
 
-    public static implicit operator Result<TError, TOk>(in TOk    ok)  => new Result<TError, TOk>(ok);
-    public static implicit operator Result<TError, TOk>(in TError err) => new Result<TError, TOk>(err);
+    public static implicit operator Result<TError, TOk>(in TOk ok)
+    {
+        return new Result<TError, TOk>(ok);
+    }
+
+    public static implicit operator Result<TError, TOk>(in TError err)
+    {
+        return new Result<TError, TOk>(err);
+    }
 
     public static Result<TError, TOk> Ok(in TOk value)
     {
@@ -149,58 +201,14 @@ public readonly struct Result<TError, TOk> : IEitherValueType<TError, TOk>, IEqu
         return Option<TError>.None;
     }
 
-    /// <inheritdoc />
-    public bool Equals(Result<TError, TOk> other)
-    {
-        if (!_initialized && !other._initialized)
-        {
-            return true;
-        }
-
-        return _variant switch
-        {
-            ResultVariant.Ok  => EqualityComparer<TOk>.Default.Equals(_value, other._value)
-          , ResultVariant.Err => EqualityComparer<TError>.Default.Equals(_err, other._err)
-          , _ => (_initialized == other._initialized                         && _variant == other._variant &&
-                  EqualityComparer<TOk>.Default.Equals(_value, other._value) &&
-                  EqualityComparer<TError>.Default.Equals(_err, other._err))
-        };
-    }
-
-    /// <inheritdoc />
-    public override bool Equals(object? obj)
-    {
-        return obj is Result<TError, TOk> other && Equals(other);
-    }
 
     /// <summary>
-    /// Returns a hash code for this instance. When the result is <see cref="ResultVariant.Ok"/> this returns the hashcode of the {T} type value. When the result is <see cref="ResultVariant.Err"/> this returns the hashcode of the {TError} type value.
-    /// When not initialized this returns 0.
+    ///  Control flow based on pattern matching.
     /// </summary>
-    /// <returns>
-    /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.
-    /// </returns>
-    public override int GetHashCode()
-    {
-        if (!_initialized)
-        {
-            return 0;
-        }
-
-        return IsOk() ? _value?.GetHashCode() ?? 0 : _err?.GetHashCode() ?? 0;
-    }
-
-    public static bool operator ==(Result<TError, TOk> left, Result<TError, TOk> right)
-    {
-        return left.Equals(right);
-    }
-
-    public static bool operator !=(Result<TError, TOk> left, Result<TError, TOk> right)
-    {
-        return !left.Equals(right);
-    }
-
-    /// <inheritdoc cref="IEither{TLeft,TRight}" />
+    /// <typeparam name="TU">The output type of the match.</typeparam>
+    /// <param name="onErr">Calls this when the type is Err.</param>
+    /// <param name="onOk">Calls this when the type is right.</param>
+    /// <returns></returns>
     public TU Match<TU>(Func<TError, TU> onErr, Func<TOk, TU> onOk)
     {
         return IsOk() ? onOk(_value) : onErr(ErrValue);
@@ -244,7 +252,7 @@ public readonly struct Result<TError, TOk> : IEitherValueType<TError, TOk>, IEqu
         }
     }
 
-    /// <inheritdoc cref="IEither{TLeft,TRight}" />
+    /// Map current <see cref="Result{TError,TOk}"/> to a new <see cref="Result{TError,TOk}"/> where error is mapped with <paramref name="selectErr"/> and ok is mapped with <paramref name="selectOk"/>.
     public Result<TF, TU> Map<TF, TU>(Func<TError, TF> selectErr, Func<TOk, TU> selectOk)
     {
         return IsOk()
@@ -276,34 +284,6 @@ public readonly struct Result<TError, TOk> : IEitherValueType<TError, TOk>, IEqu
     public Result<TError, TU> And<TU>(Result<TError, TU> result)
     {
         return IsOk() ? result : Result<TError, TU>.Err(ErrValue);
-    }
-
-    /// <summary>
-    ///Calls op if the result is Ok, otherwise returns the Err value of self.
-    ///This function can be used for control flow based on Result values.
-    /// </summary>
-    public Result<TError, TU> AndThen<TU>(Func<TOk, Result<TError, TU>> op)
-    {
-        return IsOk() ? op(_value) : Result<TError, TU>.Err(ErrValue);
-    }
-
-    /// <summary>
-    ///Calls op if the result is Ok, otherwise returns the Err value of self.
-    ///This function can be used for control flow based on Result values.
-    /// </summary>
-    public Result<TError, TU> AndThen<TU>(OnOk<Result<TError, TU>, TOk> op)
-    {
-        return IsOk() ? op(_value) : Result<TError, TU>.Err(ErrValue);
-    }
-
-    public unsafe Result<TError, TU> AndThen<TU>(delegate*<in TOk, Result<TError, TU>> onOk)
-    {
-        return IsOk() ? onOk(_value) : Result<TError, TU>.Err(ErrValue);
-    }
-
-    public unsafe Result<TError, TU> AndThen<TU>(delegate*<TOk, Result<TError, TU>> onOk)
-    {
-        return IsOk() ? onOk(_value) : Result<TError, TU>.Err(ErrValue);
     }
 
     /// <summary>
@@ -369,7 +349,7 @@ public readonly struct Result<TError, TOk> : IEitherValueType<TError, TOk>, IEqu
         //Could use match function, but I assume this is faster.
         return IsOk() ? _value : op(ErrValue);
     }
-    
+
     /// <summary>
     ///Joins two results to a tuple of Ok values when both are Ok value, returns the first error otherwise.
     ///  This function can be used to compose results of 2 functions.
@@ -462,7 +442,7 @@ public readonly struct Result<TError, TOk> : IEitherValueType<TError, TOk>, IEqu
                 return true;
         }
     }
-    
+
     /// <summary>
     /// Deconstructs the Result type to the given out parameters and returns if the Result was Err.
     /// </summary>
@@ -490,42 +470,43 @@ public readonly struct Result<TError, TOk> : IEitherValueType<TError, TOk>, IEqu
       , Ok  = 1
     }
 
-    private const string VariantFieldName = "variant";
-    private const string ValueFieldName   = "ok";
-    private const string ErrFieldName     = "err";
+    #region AndThen
 
-    //Serialize
-    /// <inheritdoc />
-    public void GetObjectData(SerializationInfo info, StreamingContext context)
+    /// <summary>
+    ///Calls op if the result is Ok, otherwise returns the Err value of self.
+    ///This function can be used for control flow based on Result values.
+    /// </summary>
+    public Result<TError, TU> AndThen<TU>(Func<TOk, Result<TError, TU>> op)
     {
-        info.AddValue(VariantFieldName, (byte)_variant);
-        if (IsOk())
-        {
-            info.AddValue(ValueFieldName, _value);
-        }
-        else
-        {
-            info.AddValue(ErrFieldName, _err);
-        }
+        return IsOk() ? op(_value) : Result<TError, TU>.Err(ErrValue);
     }
 
-    //Deserialize
-    private Result(SerializationInfo serializationInfo, StreamingContext streamingContext)
+    /// <summary>
+    ///Calls op if the result is Ok, otherwise returns the Err value of self.
+    ///This function can be used for control flow based on Result values.
+    /// </summary>
+    public Result<TError, TU> AndThen<TU>(OnOk<Result<TError, TU>, TOk> op)
     {
-        _variant = (ResultVariant)serializationInfo.GetByte(VariantFieldName);
-        if (_variant == ResultVariant.Ok)
-        {
-            //note: decide on whether to panic or leave this as is, since it is possible that the caller intended to serialize a null value
-            _value       = (TOk?)serializationInfo.GetValue(ValueFieldName, typeof(TOk))!;
-            _err         = default!;
-            _initialized = true;
-        }
-        else
-        {
-            //note: decide on whether to panic or leave this as is, since it is possible that the caller intended to serialize a null value
-            _err         = (TError?)serializationInfo.GetValue(ErrFieldName, typeof(TError))!;
-            _value       = default!;
-            _initialized = true;
-        }
+        return IsOk() ? op(_value) : Result<TError, TU>.Err(ErrValue);
     }
+
+    /// <summary>
+    ///Calls op if the result is Ok, otherwise returns the Err value of self.
+    ///This function can be used for control flow based on Result values.
+    /// </summary>
+    public unsafe Result<TError, TU> AndThen<TU>(delegate*<in TOk, Result<TError, TU>> onOk)
+    {
+        return IsOk() ? onOk(_value) : Result<TError, TU>.Err(ErrValue);
+    }
+
+    /// <summary>
+    ///Calls op if the result is Ok, otherwise returns the Err value of self.
+    ///This function can be used for control flow based on Result values.
+    /// </summary>
+    public unsafe Result<TError, TU> AndThen<TU>(delegate*<TOk, Result<TError, TU>> onOk)
+    {
+        return IsOk() ? onOk(_value) : Result<TError, TU>.Err(ErrValue);
+    }
+
+    #endregion
 }

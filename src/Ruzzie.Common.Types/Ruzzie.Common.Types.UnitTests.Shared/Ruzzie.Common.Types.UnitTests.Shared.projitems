@@ -10,8 +10,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)ErrorTypeTests.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)LeftRightTests.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)EitherTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ResultPanicExtensionsTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serialization\OptionSerializationTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)OptionTests.cs" />

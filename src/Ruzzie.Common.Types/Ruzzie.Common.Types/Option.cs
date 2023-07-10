@@ -23,21 +23,18 @@ public static class Option
 }
 
 [Serializable]
-[DebuggerDisplay("{" + nameof(_variant) + "}, {" + nameof(_value) + "}")]
-public readonly struct Option<TValue> : ISerializable, IFormattable
+[DebuggerDisplay("{DebuggerDisplay,nq}")]
+public readonly record struct Option<TValue> : ISerializable, IFormattable
 {
-    public static readonly Option<TValue> None = new Option<TValue>(Unit.Void);
+    private const          string         HasValueFieldName = "hasValue";
+    private const          string         ValueFieldName    = "value";
+    public static readonly Option<TValue> None              = Option.None<TValue>(); //new Option<TValue>(Unit.Void);
 
-    private const string HasValueFieldName = "hasValue";
-    private const string ValueFieldName    = "value";
 
-    private readonly OptionVariant _variant;
     private readonly TValue        _value;
+    private readonly OptionVariant _variant;
 
-    public static Option<TValue> Some(in TValue value)
-    {
-        return new Option<TValue>(value);
-    }
+    private string DebuggerDisplay => $"{_variant}({ToString()})";
 
     public Option(in TValue value)
     {
@@ -45,23 +42,85 @@ public readonly struct Option<TValue> : ISerializable, IFormattable
         _variant = OptionVariant.Some;
     }
 
-    public static implicit operator Option<TValue>(in TValue value) => new Option<TValue>(value);
-
-    // ReSharper disable once UnusedParameter.Local
-#pragma warning disable IDE0060 // Remove unused parameter
+    /*
     private Option(Unit _)
-#pragma warning restore IDE0060 // Remove unused parameter
     {
         _variant = OptionVariant.None;
         _value   = default!;
     }
+*/
 
+    //Deserialize
+    private Option(SerializationInfo serializationInfo, StreamingContext streamingContext)
+    {
+        _variant = serializationInfo.GetBoolean(HasValueFieldName) ? OptionVariant.Some : OptionVariant.None;
+        if (_variant == OptionVariant.Some)
+        {
+            var value = (TValue?)serializationInfo.GetValue(ValueFieldName, typeof(TValue));
+            _value = value!; //note: decide on whether to panic or leave this as is, since it is possible that the caller intended to serialize a null value
+        }
+        else
+        {
+            _value = default!;
+        }
+    }
+
+    public string ToString(string? format, IFormatProvider? formatProvider)
+    {
+        if (IsNone())
+        {
+            return "";
+        }
+
+        if (_value is IFormattable formattable)
+        {
+            return formattable.ToString(format, formatProvider);
+        }
+
+        return format != null ? string.Format(formatProvider, format, _value) : _value?.ToString() ?? "";
+    }
+
+    //Serialize
+    public void GetObjectData(SerializationInfo info, StreamingContext context)
+    {
+        info.AddValue(HasValueFieldName, _variant == OptionVariant.Some);
+        if (IsSome())
+        {
+            info.AddValue(ValueFieldName, _value, typeof(TValue));
+        }
+    }
+
+    public override int GetHashCode()
+    {
+        if (_value != null && _variant == OptionVariant.Some)
+        {
+            return _value.GetHashCode();
+        }
+
+        return 0;
+    }
+
+    public static Option<TValue> Some(in TValue value)
+    {
+        return new Option<TValue>(value);
+    }
+
+    public static implicit operator Option<TValue>(in TValue value)
+    {
+        return new Option<TValue>(value);
+    }
+
+    /*
     // ReSharper disable once UnusedParameter.Global
     /// <summary>
     /// Implicit operator to create a new Option with a  nothing value, when a <see cref="Unit.Void"/> is passed.
     ///   Or when <typeparamref name="TValue"/> is a value type and one passes a null value.
     /// </summary>
-    public static implicit operator Option<TValue>(in Unit _) => new Option<TValue>(_);
+    public static implicit operator Option<TValue>(in Unit _)
+    {
+        return new Option<TValue>(_);
+    }
+*/
 
     public T Match<T>(Func<T> onNone, Func<TValue, T> onSome)
     {
@@ -188,46 +247,6 @@ public readonly struct Option<TValue> : ISerializable, IFormattable
         return _variant == OptionVariant.Some;
     }
 
-    public bool Equals(Option<TValue> other)
-    {
-        if (IsNone() && other.IsNone())
-        {
-            return true;
-        }
-
-        return Equals(_value, other._value);
-    }
-
-    public override bool Equals(object? obj)
-    {
-        return obj is Option<TValue> other && Equals(other);
-    }
-
-    public override int GetHashCode()
-    {
-        if (_value != null && _variant == OptionVariant.Some)
-        {
-            return _value.GetHashCode();
-        }
-
-        return 0;
-    }
-
-    public string ToString(string? format, IFormatProvider? formatProvider)
-    {
-        if (IsNone())
-        {
-            return "";
-        }
-
-        if (_value is IFormattable formattable)
-        {
-            return formattable.ToString(format, formatProvider);
-        }
-
-        return format != null ? string.Format(formatProvider, format, _value) : _value?.ToString() ?? "";
-    }
-
     public override string ToString()
     {
         if (IsNone())
@@ -236,41 +255,6 @@ public readonly struct Option<TValue> : ISerializable, IFormattable
         }
 
         return _value?.ToString() ?? "";
-    }
-
-    //Serialize
-    public void GetObjectData(SerializationInfo info, StreamingContext context)
-    {
-        info.AddValue(HasValueFieldName, _variant == OptionVariant.Some);
-        if (IsSome())
-        {
-            info.AddValue(ValueFieldName, _value, typeof(TValue));
-        }
-    }
-
-    //Deserialize
-    private Option(SerializationInfo serializationInfo, StreamingContext streamingContext)
-    {
-        _variant = serializationInfo.GetBoolean(HasValueFieldName) ? OptionVariant.Some : OptionVariant.None;
-        if (_variant == OptionVariant.Some)
-        {
-            var value = (TValue?)serializationInfo.GetValue(ValueFieldName, typeof(TValue));
-            _value = value!; //note: decide on whether to panic or leave this as is, since it is possible that the caller intended to serialize a null value
-        }
-        else
-        {
-            _value = default!;
-        }
-    }
-
-    public static bool operator ==(Option<TValue> leftOption, Option<TValue> rightOption)
-    {
-        return Equals(leftOption, rightOption);
-    }
-
-    public static bool operator !=(Option<TValue> leftOption, Option<TValue> rightOption)
-    {
-        return !Equals(leftOption, rightOption);
     }
 
     private enum OptionVariant : byte //We use an enum value so that it is more readable

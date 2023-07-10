@@ -1,80 +1,48 @@
-﻿using System;
-using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
+﻿using System.IO;
 using FluentAssertions;
 using Newtonsoft.Json;
 
-namespace Ruzzie.Common.Types.UnitTests.Serialization
+namespace Ruzzie.Common.Types.UnitTests.Serialization;
+
+public static class SerializationTestsExtensions
 {
-    public static class SerializationTestsExtensions
+    public static void AssertDefaultDataContractSerializationSuccessForValueType<T>(this T value) where T : struct
     {
-        public static void AssertDefaultBinarySerializationSuccessForValueType<T>(this T value) where T : struct
+        var serializer = new System.Runtime.Serialization.DataContractSerializer(typeof(T));
+
+        using (MemoryStream stream = new MemoryStream())
         {
-            var binaryFormatter = new BinaryFormatter();
-            using (MemoryStream stream = new MemoryStream())
-            {
-                binaryFormatter.Serialize(stream, value);
+            serializer.WriteObject(stream, value);
 
-                stream.Seek(0, SeekOrigin.Begin);
+            stream.Seek(0, SeekOrigin.Begin);
 
-                var deserializedValue = (T) binaryFormatter.Deserialize(stream);
+            var deserializedValue = (T)serializer.ReadObject(stream);
 
-                deserializedValue.Should().NotBeSameAs(value);
-                value.Equals(deserializedValue).Should().BeTrue();
-            }
+            deserializedValue.Should().NotBeSameAs(value);
+            value.Equals(deserializedValue).Should().BeTrue();
         }
+    }
 
-        public static void AssertDefaultDataContractSerializationSuccessForValueType<T>(this T value) where T : struct
-        {
-            var serializer = new System.Runtime.Serialization.DataContractSerializer(typeof(T));
+    public static T AssertNewtonsoftJsonSerializationSuccessForValueType<T>(this T value) where T : struct
+    {
+        var serializedOption = JsonConvert.SerializeObject(value);
 
-            using (MemoryStream stream = new MemoryStream())
-            {
-                serializer.WriteObject(stream, value);
+        var deserializedOption = JsonConvert.DeserializeObject<T>(serializedOption);
 
-                stream.Seek(0, SeekOrigin.Begin);
-
-                var deserializedValue = (T) serializer.ReadObject(stream);
-
-                deserializedValue.Should().NotBeSameAs(value);
-                value.Equals(deserializedValue).Should().BeTrue();
-            }
-        }
-
-        public static T AssertNewtonsoftJsonSerializationSuccessForValueType<T>(this T value) where T : struct
-        {
-            var serializedOption = JsonConvert.SerializeObject(value);
-
-            var deserializedOption = JsonConvert.DeserializeObject<T>(serializedOption);
-
-            deserializedOption.Should().NotBeSameAs(value);
-            value.Equals(deserializedOption).Should().BeTrue();
-            return deserializedOption;
-        }
+        deserializedOption.Should().NotBeSameAs(value);
+        value.Equals(deserializedOption).Should().BeTrue();
+        return deserializedOption;
+    }
 
 
-        public static T AssertSystemTextJsonSerializationSuccessForValueType<T>(this T value) where T : struct
-        {
+    public static T AssertSystemTextJsonSerializationSuccessForValueType<T>(this T value) where T : struct
+    {
+        var serializedOption = System.Text.Json.JsonSerializer.Serialize(value);
 
-            var serializedOption = System.Text.Json.JsonSerializer.Serialize(value);
+        var deserializedOption = System.Text.Json.JsonSerializer.Deserialize<T>(serializedOption);
 
-            var deserializedOption = System.Text.Json.JsonSerializer.Deserialize<T>(serializedOption);
-
-            deserializedOption.Should().NotBeSameAs(value);
-            value.Equals(deserializedOption).Should().BeTrue();
-            return deserializedOption;
-        }
-
-        public static T AssertJilJsonSerializationSuccessForValueType<T>(this T value) where T : struct
-        {
-
-            var serializedOption = Jil.JSON.SerializeDynamic(value);
-
-            var deserializedOption = Jil.JSON.Deserialize<T>(serializedOption);
-
-            deserializedOption.Should().NotBeSameAs(value);
-            value.Equals(deserializedOption).Should().BeTrue();
-            return deserializedOption;
-        }
+        deserializedOption.Should().NotBeSameAs(value);
+        value.Equals(deserializedOption).Should().BeTrue();
+        return deserializedOption;
     }
 }

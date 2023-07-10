@@ -1,29 +1,29 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <TargetFrameworks>net6.0;netstandard2.1</TargetFrameworks>
-    <LangVersion>default</LangVersion>
-    <NullableContextOptions>enable</NullableContextOptions>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <WarningsAsErrors />
-    <NeutralLanguage>en-US</NeutralLanguage>
-    <Version>0.0.2.0</Version>
-    <Authors>Dorus Verhoeckx</Authors>
-    <Company>D Crafting</Company>
-    <Copyright>Copyright © Dorus Verhoeckx 2019-2022</Copyright>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <RepositoryUrl>https://github.com/Ruzzie/Ruzzie.Common.Types</RepositoryUrl>
-    <PackageProjectUrl>https://github.com/Ruzzie/Ruzzie.Common.Types</PackageProjectUrl>
-    <RepositoryType>git</RepositoryType>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <DocumentationFile>Ruzzie.Common.Types.xml</DocumentationFile>
-    <Nullable>enable</Nullable>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-  </PropertyGroup>
-  <PropertyGroup>
-    <NoWarn>1701;1702;1591</NoWarn>
-	<Description>Some functional types (Either, Left, Right, Option, Result) for C#. Best used with non nullable reference types.</Description>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-    <DebugSymbols>true</DebugSymbols>
-  </PropertyGroup>
+    <PropertyGroup>
+        <TargetFrameworks>net6.0;</TargetFrameworks>
+        <LangVersion>default</LangVersion>
+        <NullableContextOptions>enable</NullableContextOptions>
+        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+        <WarningsAsErrors />
+        <NeutralLanguage>en-US</NeutralLanguage>
+        <Version>0.0.3.0</Version>
+        <Authors>Dorus Verhoeckx</Authors>
+        <Company>D Crafting</Company>
+        <Copyright>Copyright © Dorus Verhoeckx 2019-2023</Copyright>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <RepositoryUrl>https://github.com/Ruzzie/Ruzzie.Common.Types</RepositoryUrl>
+        <PackageProjectUrl>https://github.com/Ruzzie/Ruzzie.Common.Types</PackageProjectUrl>
+        <RepositoryType>git</RepositoryType>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <DocumentationFile>Ruzzie.Common.Types.xml</DocumentationFile>
+        <Nullable>enable</Nullable>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    </PropertyGroup>
+    <PropertyGroup>
+        <NoWarn>1701;1702;1591</NoWarn>
+        <Description>Some functional types (Option, Result) for C#. Best used with non nullable reference types.</Description>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+        <DebugSymbols>true</DebugSymbols>
+    </PropertyGroup>
 </Project>

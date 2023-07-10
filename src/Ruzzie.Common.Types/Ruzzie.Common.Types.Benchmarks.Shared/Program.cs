@@ -53,19 +53,7 @@ namespace Ruzzie.Common.Types.Benchmarks
             return new Result<string, List<object>>(_randomObject).Map(Select, Select);
         }
 
-        [Benchmark]
-        public IEither<string, int> Right_WithStringIntValue()
-        {
-            return new Right<string, int>(_randomInt).Map(Select, Select);
-        }
-
-        [Benchmark]
-        public IEither<string, List<object>> Right_WithStringObjectValue()
-        {
-            return new Right<string, List<object>>(_randomObject).Map(Select, Select);
-        }
-
-        static T Select<T>(T value)
+        private static T Select<T>(T value)
         {
             return value;
         }
