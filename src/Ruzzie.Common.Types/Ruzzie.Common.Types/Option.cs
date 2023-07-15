@@ -1,5 +1,4 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 
@@ -24,6 +23,7 @@ public static class Option
 
 [Serializable]
 [DebuggerDisplay("{DebuggerDisplay,nq}")]
+[SkipLocalsInit]
 public readonly record struct Option<TValue> : ISerializable, IFormattable
 {
     private const          string         HasValueFieldName = "hasValue";
@@ -32,7 +32,7 @@ public readonly record struct Option<TValue> : ISerializable, IFormattable
 
 
     private readonly TValue        _value;
-    private readonly OptionVariant _variant;
+    private readonly OptionVariant _variant = OptionVariant.None;
 
     private string DebuggerDisplay => $"{_variant}({ToString()})";
 

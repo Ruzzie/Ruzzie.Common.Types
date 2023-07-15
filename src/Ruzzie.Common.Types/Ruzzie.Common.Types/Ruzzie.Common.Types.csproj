@@ -18,9 +18,16 @@
         <DocumentationFile>Ruzzie.Common.Types.xml</DocumentationFile>
         <Nullable>enable</Nullable>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+
+        <ImplicitUsings>enable</ImplicitUsings>
+        <IsTrimmable>true</IsTrimmable>
+        <EnableTrimAnalyzer>true</EnableTrimAnalyzer>
+        <!-- Prevent warnings from unused code in dependencies -->
+        <TrimmerDefaultAction>link</TrimmerDefaultAction>
+
     </PropertyGroup>
     <PropertyGroup>
-        <NoWarn>1701;1702;1591</NoWarn>
+        <NoWarn>1591</NoWarn>
         <Description>Some functional types (Option, Result) for C#. Best used with non nullable reference types.</Description>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">

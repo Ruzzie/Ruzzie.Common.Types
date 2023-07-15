@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Ruzzie.Common.Types;
+﻿namespace Ruzzie.Common.Types.Diagnostics;
 
 public class PanicException<TError> : Exception
 {

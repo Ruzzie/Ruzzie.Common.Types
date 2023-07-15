@@ -1,9 +1,7 @@
-﻿#nullable enable
-using System;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 using System.Runtime.ExceptionServices;
 
-namespace Ruzzie.Common.Types;
+namespace Ruzzie.Common.Types.Diagnostics;
 
 public static class ResultPanicExtensions
 {
@@ -32,6 +30,7 @@ public static class ResultPanicExtensions
         return new PanicException<TError>(error, errMsg);
     }
 
+
     /// <summary>
     /// Unwraps a result, yielding the content of an Ok. When Error throws an exception.
     /// </summary>
@@ -41,11 +40,11 @@ public static class ResultPanicExtensions
     {
         unsafe
         {
-            return self.Match(&ThrowPanicExceptionForGivenError<TError, T>, &PassValue);
+            return self.Match(&Unwrap_ThrowPanicExceptionForGivenError<TError, T>, &PassValue);
         }
     }
 
-    private static T ThrowPanicExceptionForGivenError<TError, T>(in TError e)
+    private static T Unwrap_ThrowPanicExceptionForGivenError<TError, T>(in TError e)
     {
         // will throw
         ExceptionDispatchInfo.Throw(CreatePanicExceptionForErr($"called `{nameof(Unwrap)}` on an `Error` value", e));

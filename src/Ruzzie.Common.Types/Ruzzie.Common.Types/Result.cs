@@ -1,7 +1,7 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
+using Ruzzie.Common.Types.Diagnostics;
 
 namespace Ruzzie.Common.Types;
 
@@ -43,16 +43,17 @@ public delegate TU OnOk<out TU, T>(in T ok);
 /// </remarks>
 [Serializable]
 [DebuggerDisplay("{DebuggerDisplay,nq}")]
+[SkipLocalsInit]
 public readonly record struct Result<TError, TOk> : ISerializable
 {
-    private const    string        VariantFieldName = "variant";
-    private const    string        ValueFieldName   = "ok";
-    private const    string        ErrFieldName     = "err";
-    private readonly TError        _err;
-    private readonly bool          _initialized;
+    private const    string VariantFieldName = "variant";
+    private const    string ValueFieldName   = "ok";
+    private const    string ErrFieldName     = "err";
+    private readonly TError _err;
+
+    private readonly bool          _initialized = false;
     private readonly TOk           _value;
     private readonly ResultVariant _variant;
-
 
     private string DebuggerDisplay => $"{_variant}({ToString()})";
 
@@ -126,6 +127,14 @@ public readonly record struct Result<TError, TOk> : ISerializable
         {
             info.AddValue(ErrFieldName, _err);
         }
+    }
+
+    /// Experimental deconstruct
+    public void Deconstruct(out TError? err, out TOk? value, out bool isErr)
+    {
+        err   = _err;
+        value = _value;
+        isErr = IsErr();
     }
 
     public override string ToString()

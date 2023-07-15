@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using FluentAssertions;
 using NUnit.Framework;
+using Ruzzie.Common.Types.Diagnostics;
 
 // ReSharper disable InconsistentNaming
 namespace Ruzzie.Common.Types.UnitTests;
