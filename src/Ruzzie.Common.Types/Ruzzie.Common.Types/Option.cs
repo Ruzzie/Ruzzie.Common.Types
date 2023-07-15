@@ -42,14 +42,6 @@ public readonly record struct Option<TValue> : ISerializable, IFormattable
         _variant = OptionVariant.Some;
     }
 
-    /*
-    private Option(Unit _)
-    {
-        _variant = OptionVariant.None;
-        _value   = default!;
-    }
-*/
-
     //Deserialize
     private Option(SerializationInfo serializationInfo, StreamingContext streamingContext)
     {

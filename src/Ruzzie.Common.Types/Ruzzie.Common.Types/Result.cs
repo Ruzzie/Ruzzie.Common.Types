@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 
@@ -41,6 +42,7 @@ public delegate TU OnOk<out TU, T>(in T ok);
 /// This such that chaining and composing results that are ok should work with the default.
 /// </remarks>
 [Serializable]
+[DebuggerDisplay("{DebuggerDisplay,nq}")]
 public readonly record struct Result<TError, TOk> : ISerializable
 {
     private const    string        VariantFieldName = "variant";
@@ -50,6 +52,9 @@ public readonly record struct Result<TError, TOk> : ISerializable
     private readonly bool          _initialized;
     private readonly TOk           _value;
     private readonly ResultVariant _variant;
+
+
+    private string DebuggerDisplay => $"{_variant}({ToString()})";
 
     /// <summary>
     /// Gets the error value.
@@ -120,6 +125,19 @@ public readonly record struct Result<TError, TOk> : ISerializable
         else
         {
             info.AddValue(ErrFieldName, _err);
+        }
+    }
+
+    public override string ToString()
+    {
+        switch (_variant)
+        {
+            case ResultVariant.Err:
+                return _err?.ToString() ?? "";
+            case ResultVariant.Ok:
+                return _value?.ToString() ?? "";
+            default:
+                return "";
         }
     }
 
