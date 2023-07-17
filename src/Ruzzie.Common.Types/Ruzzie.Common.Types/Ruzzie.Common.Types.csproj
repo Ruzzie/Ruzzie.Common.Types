@@ -4,9 +4,9 @@
         <LangVersion>default</LangVersion>
         <NullableContextOptions>enable</NullableContextOptions>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-        <WarningsAsErrors />
+        <WarningsAsErrors/>
         <NeutralLanguage>en-US</NeutralLanguage>
-        <Version>0.0.3.0</Version>
+        <Version>0.0.4.0</Version>
         <Authors>Dorus Verhoeckx</Authors>
         <Company>D Crafting</Company>
         <Copyright>Copyright © Dorus Verhoeckx 2019-2023</Copyright>

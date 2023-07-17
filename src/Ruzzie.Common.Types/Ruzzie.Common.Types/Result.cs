@@ -379,7 +379,7 @@ public readonly record struct Result<TError, TOk> : ISerializable
 
     /// <summary>
     ///Joins two results to a tuple of Ok values when both are Ok value, returns the first error otherwise.
-    ///  This function can be used to compose results of 2 functions.
+    ///  This function can be used to compose the results of 2 functions.
     /// </summary>
     public Result<TError, (TOk, TU)> JoinOk<TU>(Result<TError, TU> secondResult)
     {
@@ -435,6 +435,24 @@ public readonly record struct Result<TError, TOk> : ISerializable
     /// When 2 results are Ok the map function will be called. The first error will be called otherwise.
     /// this can be used to compose results.
     public Result<TError, TNewOk> MapOk2<TNewOk, TU>(Result<TError, TU> secondResult, Func<TOk, TU, TNewOk> map)
+    {
+        if (!IsOk())
+        {
+            return _err;
+        }
+
+        if (secondResult.IsOk())
+        {
+            return map(_value, secondResult._value);
+        }
+
+        return secondResult._err;
+    }
+
+    /// When 2 results are Ok the map function will be called. The first error will be called otherwise.
+    /// this can be used to compose results.
+    public unsafe Result<TError, TNewOk> MapOk2<TNewOk, TU>(Result<TError, TU>         secondResult
+                                                          , delegate*<TOk, TU, TNewOk> map)
     {
         if (!IsOk())
         {

@@ -21,6 +21,35 @@ public static class Option
     }
 }
 
+public static class OptionExtensions
+{
+    public static Option<TValue> AsSome<TValue>(this TValue value)
+    {
+        return new Option<TValue>(value);
+    }
+
+    // ReSharper disable once ConvertNullableToShortForm
+    public static Option<TValue> ToOption<TValue>(this Nullable<TValue> value) where TValue : struct
+    {
+        if (value.HasValue)
+        {
+            return value.Value.AsSome();
+        }
+
+        return Option<TValue>.None;
+    }
+
+    public static Option<TValue> ToOption<TValue>(this TValue? value)
+    {
+        if (value != null)
+        {
+            return value.AsSome();
+        }
+
+        return Option<TValue>.None;
+    }
+}
+
 [Serializable]
 [DebuggerDisplay("{DebuggerDisplay,nq}")]
 [SkipLocalsInit]
@@ -28,7 +57,7 @@ public readonly record struct Option<TValue> : ISerializable, IFormattable
 {
     private const          string         HasValueFieldName = "hasValue";
     private const          string         ValueFieldName    = "value";
-    public static readonly Option<TValue> None              = Option.None<TValue>(); //new Option<TValue>(Unit.Void);
+    public static readonly Option<TValue> None              = default;
 
 
     private readonly TValue        _value;
@@ -102,31 +131,19 @@ public readonly record struct Option<TValue> : ISerializable, IFormattable
         return new Option<TValue>(value);
     }
 
-    /*
-    // ReSharper disable once UnusedParameter.Global
-    /// <summary>
-    /// Implicit operator to create a new Option with a  nothing value, when a <see cref="Unit.Void"/> is passed.
-    ///   Or when <typeparamref name="TValue"/> is a value type and one passes a null value.
-    /// </summary>
-    public static implicit operator Option<TValue>(in Unit _)
-    {
-        return new Option<TValue>(_);
-    }
-*/
-
     public T Match<T>(Func<T> onNone, Func<TValue, T> onSome)
     {
-        return _variant == OptionVariant.None ? onNone() : onSome(_value);
+        return IsNone() ? onNone() : onSome(_value);
     }
 
     public T Match<T>(OnNone<T> onNone, OnSome<T, TValue> onSome)
     {
-        return _variant == OptionVariant.None ? onNone() : onSome(_value);
+        return IsNone() ? onNone() : onSome(_value);
     }
 
     public unsafe T Match<T>(delegate*<T> onNone, delegate*<TValue, T> onSome)
     {
-        return _variant == OptionVariant.None ? onNone() : onSome(_value);
+        return IsNone() ? onNone() : onSome(_value);
     }
 
     /// <summary>
