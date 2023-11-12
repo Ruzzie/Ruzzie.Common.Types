@@ -1,18 +1,16 @@
 [![NuGet version](https://badge.fury.io/nu/Ruzzie.Common.Types.svg)](https://badge.fury.io/nu/Ruzzie.Common.Types)
 [![Build status](https://ci.appveyor.com/api/projects/status/k4w55w361so4xqn5/branch/master?svg=true)](https://ci.appveyor.com/project/Ruzzie/ruzzie-common-types/branch/master)
+
 # Ruzzie.Common.Types
+
 > Some functional types for C#
 
 Some functional types for robust non-nullable programming, inspired by Rust, Go, Kotlin, F# and others.
 
 - `readonly struct Option<TValue>`, for optional values `Some` or `None`
-- `readonly struct Result<TError, T>`, for (Rust style) result style values
-- `readonly struct Either<TLeft, TRight>`
-- `class Left<TLeft, TRight>`
-- `class Right<TLeft, TRight>`
+- `readonly struct Result<TError, T>`, for DU Result style values
 
-> Best used with non nullable reference types (C#8).
-
+> Best used with non nullable reference types (>= C#8).
 
 ## Getting started
 
@@ -21,6 +19,7 @@ Some functional types for robust non-nullable programming, inspired by Rust, Go,
     Install-Package Ruzzie.Common.Types
 
 ### Using Option Type, short examples
+
 ```csharp
 //Some value
 var optionWithSomeValue = Option.Some<int>(42);
@@ -63,6 +62,7 @@ Assert.AreEqual("default", yValue);
 ```
 
 ### Using Result Type, short examples
+
 ```csharp
 //Ok Match
 var result = new Result<string, int>(ok: 42);

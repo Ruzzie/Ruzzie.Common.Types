@@ -4,7 +4,7 @@
         <LangVersion>default</LangVersion>
         <NullableContextOptions>enable</NullableContextOptions>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-        <WarningsAsErrors/>
+        <WarningsAsErrors />
         <NeutralLanguage>en-US</NeutralLanguage>
         <Version>0.0.4.0</Version>
         <Authors>Dorus Verhoeckx</Authors>

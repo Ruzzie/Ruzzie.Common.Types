@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using FluentAssertions;
 using Newtonsoft.Json;
 
@@ -16,7 +17,8 @@ public static class SerializationTestsExtensions
 
             stream.Seek(0, SeekOrigin.Begin);
 
-            var deserializedValue = (T)serializer.ReadObject(stream);
+            var deserializedValue =
+                (T)(serializer.ReadObject(stream) ?? throw new InvalidOperationException("Stream is null"));
 
             deserializedValue.Should().NotBeSameAs(value);
             value.Equals(deserializedValue).Should().BeTrue();

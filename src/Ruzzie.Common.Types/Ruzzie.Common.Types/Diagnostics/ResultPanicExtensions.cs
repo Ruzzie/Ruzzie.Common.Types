@@ -1,10 +1,12 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.ExceptionServices;
 
 namespace Ruzzie.Common.Types.Diagnostics;
 
 public static class ResultPanicExtensions
 {
+    [StackTraceHidden]
     internal static PanicException<TError> CreatePanicExceptionForErr<TError>(
         FormattableString message
       , in TError         error)
@@ -26,7 +28,6 @@ public static class ResultPanicExtensions
             }
         }
 
-
         return new PanicException<TError>(error, errMsg);
     }
 
@@ -36,6 +37,7 @@ public static class ResultPanicExtensions
     /// </summary>
     /// <exception cref="PanicException{TError}">Panics if the value is an Err, with a panic message provided by the Errs value.</exception>
     /// <remarks>Beware this can throw an Exception. Best used in test scenario's</remarks>
+    [StackTraceHidden]
     public static T Unwrap<TError, T>(this Result<TError, T> self)
     {
         unsafe
@@ -44,6 +46,7 @@ public static class ResultPanicExtensions
         }
     }
 
+    [StackTraceHidden]
     private static T Unwrap_ThrowPanicExceptionForGivenError<TError, T>(in TError e)
     {
         // will throw
@@ -63,6 +66,7 @@ public static class ResultPanicExtensions
     /// </summary>
     /// <exception cref="PanicException{TError}">Panics if the value is an Err, with a panic message including the passed message and the content of the Err.</exception>
     /// <remarks>Beware this can throw an Exception. Best used in test scenario's</remarks>
+    [StackTraceHidden]
     public static T Expect<TError, T>(this Result<TError, T> self, string message)
     {
         return self.Match(OnErrorExpectFail, PassValue);
@@ -82,6 +86,7 @@ public static class ResultPanicExtensions
     /// </summary>
     /// <exception cref="PanicException{TError}">Panics if the value is an Ok, with a custom panic message provided by the Ok's value.</exception>
     /// <remarks>Beware this can throw an Exception. Best used in test scenario's</remarks>
+    [StackTraceHidden]
     public static TError UnwrapError<TError, T>(this Result<TError, T> self)
     {
         unsafe
@@ -106,6 +111,7 @@ public static class ResultPanicExtensions
     /// <param name="message">A panic message to pass when the result is ok.</param>
     /// <exception cref="PanicException{TError}">Panics if the value is an Ok, with a panic message including the passed message, and the content of the Ok.</exception>
     /// <remarks>Beware this can throw an Exception. Best used in test scenario's</remarks>
+    [StackTraceHidden]
     public static TError ExpectError<TError, T>(this Result<TError, T> self, string message)
     {
         return self.Match(PassValue, OnOkFail);

@@ -29,6 +29,15 @@ public class ResultTests
     }
 
     [Test]
+    public void IsError_False()
+    {
+        var result = new Result<string, int>(123);
+
+        Assert.AreEqual(result.IsErr(out var okValue, out _, 0, ""), false);
+        Assert.AreEqual(okValue,                                     123);
+    }
+
+    [Test]
     public void IsOk_PanicWhenNotInitialized()
     {
         var result = default(Result<string, int>);
@@ -192,7 +201,8 @@ public class ResultTests
     {
         Result<object, object> res = default;
         //Is is an error, however the Exception type is initialized to default
-        //When we try to consume that err value it is null, this results in a runtime exception.
+        // We detect that the Result type is not initialized and throw a panic exception otherwise
+        //   when we try to consume that err value it is null, this results in a runtime exception.
         Assert.Throws<PanicException<object>>(() => res.Err().Match(() => "Err", s => s.ToString()));
     }
 

@@ -1,27 +1,28 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <PropertyGroup>
-    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
-    <HasSharedItems>true</HasSharedItems>
-    <SharedGUID>1abf7a34-bb2d-497c-84fd-9d5c1bdeb6f0</SharedGUID>
-  </PropertyGroup>
-  <PropertyGroup Label="Configuration">
-    <Import_RootNamespace>Ruzzie.Common.Types.UnitTests</Import_RootNamespace>
-  </PropertyGroup>
-  <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)ErrorTypeTests.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ResultPanicExtensionsTests.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Serialization\OptionSerializationTests.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)OptionTests.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ParseIntErrorKind.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Serialization\ResultSerializationTests.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ResultTests.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ResultExtensionsTests.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Serialization\SerializationTestsExtensions.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)StringExtensions.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Unit.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="$(MSBuildThisFileDirectory)Serialization\" />
-  </ItemGroup>
+    <PropertyGroup>
+        <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+        <HasSharedItems>true</HasSharedItems>
+        <SharedGUID>1abf7a34-bb2d-497c-84fd-9d5c1bdeb6f0</SharedGUID>
+    </PropertyGroup>
+    <PropertyGroup Label="Configuration">
+        <Import_RootNamespace>Ruzzie.Common.Types.UnitTests</Import_RootNamespace>
+    </PropertyGroup>
+    <ItemGroup>
+        <Compile Include="$(MSBuildThisFileDirectory)ErrorTypeTests.cs"/>
+        <Compile Include="$(MSBuildThisFileDirectory)ResTests.cs"/>
+        <Compile Include="$(MSBuildThisFileDirectory)ResultPanicExtensionsTests.cs"/>
+        <Compile Include="$(MSBuildThisFileDirectory)Serialization\OptionSerializationTests.cs"/>
+        <Compile Include="$(MSBuildThisFileDirectory)OptionTests.cs"/>
+        <Compile Include="$(MSBuildThisFileDirectory)ParseIntErrorKind.cs"/>
+        <Compile Include="$(MSBuildThisFileDirectory)Serialization\ResultSerializationTests.cs"/>
+        <Compile Include="$(MSBuildThisFileDirectory)ResultTests.cs"/>
+        <Compile Include="$(MSBuildThisFileDirectory)ResultExtensionsTests.cs"/>
+        <Compile Include="$(MSBuildThisFileDirectory)Serialization\SerializationTestsExtensions.cs"/>
+        <Compile Include="$(MSBuildThisFileDirectory)StringExtensions.cs"/>
+        <Compile Include="$(MSBuildThisFileDirectory)Unit.cs"/>
+    </ItemGroup>
+    <ItemGroup>
+        <Folder Include="$(MSBuildThisFileDirectory)Serialization\"/>
+    </ItemGroup>
 </Project>

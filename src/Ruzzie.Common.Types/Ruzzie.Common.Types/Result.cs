@@ -46,14 +46,15 @@ public delegate TU OnOk<out TU, T>(in T ok);
 [SkipLocalsInit]
 public readonly record struct Result<TError, TOk> : ISerializable
 {
-    private const    string VariantFieldName = "variant";
-    private const    string ValueFieldName   = "ok";
-    private const    string ErrFieldName     = "err";
-    private readonly TError _err;
+    private const string VariantFieldName = "variant";
+    private const string ValueFieldName   = "ok";
+    private const string ErrFieldName     = "err";
 
+    private readonly TError        _err;
     private readonly bool          _initialized = false;
     private readonly TOk           _value;
     private readonly ResultVariant _variant;
+
 
     private string DebuggerDisplay => $"{_variant}({ToString()})";
 
@@ -264,8 +265,9 @@ public readonly record struct Result<TError, TOk> : ISerializable
     }
 
     /// <summary>
-    ///Calls op if the result is Ok, otherwise returns the Err value of self.
-    ///This function can be used for control flow based on Result values.
+    ///Run a given action depending on the result. 
+    /// Only runs <paramref name="onErr"/> when the result is an Err.
+    /// Only runs <paramref name="onOk"/> when the result is Ok.
     /// </summary>
     public void For(Action<TError> onErr, Action<TOk> onOk)
     {
@@ -350,17 +352,17 @@ public readonly record struct Result<TError, TOk> : ISerializable
     }
 
     /// <summary>
-    ///Unwraps a result, yielding the content of an Ok. Else, it returns optb.
+    ///Unwraps a result, yielding the content of an Ok. Else, it returns <paramref name="defaultValue"/>.
     ///    Arguments passed to unwrap_or are eagerly evaluated; if you are passing the result of a function call, it is recommended to use unwrap_or_else, which is lazily evaluated.
     /// </summary>
-    public TOk UnwrapOr(TOk optb)
+    public TOk UnwrapOr(TOk defaultValue)
     {
         //Could use match function, but I assume this is faster.
-        return IsOk() ? _value : optb;
+        return IsOk() ? _value : defaultValue;
     }
 
     /// <summary>
-    ///Unwraps a result, yielding the content of an Ok. If the value is an Err then it calls op with its value.
+    ///Unwraps a result, yielding the content of an Ok. If the value is an Err then it calls <paramref name="op"/> with its value.
     /// </summary>
     public TOk UnwrapOrElse(Func<TError, TOk> op)
     {
@@ -369,7 +371,7 @@ public readonly record struct Result<TError, TOk> : ISerializable
     }
 
     /// <summary>
-    ///Unwraps a result, yielding the content of an Ok. If the value is an Err then it calls op with its value.
+    ///Unwraps a result, yielding the content of an Ok. If the value is an Err then it calls <paramref name="op"/> with its value.
     /// </summary>
     public TOk UnwrapOrElse(OnErr<TOk, TError> op)
     {
@@ -423,12 +425,21 @@ public readonly record struct Result<TError, TOk> : ISerializable
     /// </summary>
     public Result<TError, (TOk, TU)> AndJoinOk<TU>(Func<Result<TError, TU>> secondAction)
     {
-        if (!IsOk())
+        unsafe
         {
-            return _err;
-        }
+            if (!IsOk())
+            {
+                return _err;
+            }
 
-        return MapOk2(secondAction(), (f, s) => (f, s));
+            var secondResult = secondAction();
+            return MapOk2(secondResult, &Tuple2);
+        }
+    }
+
+    private static (T1, T2) Tuple2<T1, T2>(T1 value1, T2 value2)
+    {
+        return (value1, value2);
     }
 
 
@@ -471,6 +482,7 @@ public readonly record struct Result<TError, TOk> : ISerializable
     /// Deconstructs the Result type to the given out parameters and returns if the Result was Ok.
     /// </summary>
     /// <remarks>This makes it easier to consume in imperative code.</remarks>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool IsOk(out TOk ok, out TError err, TOk okDefault, TError errDefault)
     {
         switch (_variant)
@@ -518,7 +530,7 @@ public readonly record struct Result<TError, TOk> : ISerializable
     #region AndThen
 
     /// <summary>
-    ///Calls op if the result is Ok, otherwise returns the Err value of self.
+    ///Calls <paramref name="op"/> if the result is Ok, otherwise returns the Err value of self.
     ///This function can be used for control flow based on Result values.
     /// </summary>
     public Result<TError, TU> AndThen<TU>(Func<TOk, Result<TError, TU>> op)
@@ -527,7 +539,7 @@ public readonly record struct Result<TError, TOk> : ISerializable
     }
 
     /// <summary>
-    ///Calls op if the result is Ok, otherwise returns the Err value of self.
+    ///Calls <paramref name="op"/> if the result is Ok, otherwise returns the Err value of self.
     ///This function can be used for control flow based on Result values.
     /// </summary>
     public Result<TError, TU> AndThen<TU>(OnOk<Result<TError, TU>, TOk> op)
@@ -536,7 +548,7 @@ public readonly record struct Result<TError, TOk> : ISerializable
     }
 
     /// <summary>
-    ///Calls op if the result is Ok, otherwise returns the Err value of self.
+    ///Calls <paramref name="onOk"/> if the result is Ok, otherwise returns the Err value of self.
     ///This function can be used for control flow based on Result values.
     /// </summary>
     public unsafe Result<TError, TU> AndThen<TU>(delegate*<in TOk, Result<TError, TU>> onOk)
@@ -545,7 +557,7 @@ public readonly record struct Result<TError, TOk> : ISerializable
     }
 
     /// <summary>
-    ///Calls op if the result is Ok, otherwise returns the Err value of self.
+    ///Calls <paramref name="onOk"/> if the result is Ok, otherwise returns the Err value of self.
     ///This function can be used for control flow based on Result values.
     /// </summary>
     public unsafe Result<TError, TU> AndThen<TU>(delegate*<TOk, Result<TError, TU>> onOk)

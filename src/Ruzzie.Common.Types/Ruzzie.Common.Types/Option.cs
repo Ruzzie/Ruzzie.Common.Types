@@ -265,10 +265,10 @@ public readonly record struct Option<TValue> : ISerializable, IFormattable
 
         return _value?.ToString() ?? "";
     }
+}
 
-    private enum OptionVariant : byte //We use an enum value so that it is more readable
-    {
-        None = 0
-      , Some = 1
-    }
+internal enum OptionVariant : byte
+{
+    None = 0
+  , Some = 1
 }

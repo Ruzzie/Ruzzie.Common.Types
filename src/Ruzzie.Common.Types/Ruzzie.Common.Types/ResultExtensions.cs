@@ -30,4 +30,22 @@ public static class ResultExtensions
     {
         return self.UnwrapOr(@default);
     }
+    
+
+    public static Result<TErr, TOk> ApplyCompose<TA, TB, TOk, TErr>(this Func<TA, Result<TErr, TB>> f1
+                                                                  , Func<TB, Result<TErr, TOk>>     f2
+                                                                  , TA                              value)
+
+    {
+        return f1(value).AndThen(f2);
+    }
+    
+
+    public static unsafe Result<TErr, TOk> ApplyCompose<TA, TB, TOk, TErr>(delegate*<TA, Result<TErr, TB>>  f1
+                                                                         , delegate*<TB, Result<TErr, TOk>> f2
+                                                                         , TA                               value)
+
+    {
+        return f1(value).AndThen(f2);
+    }
 }
