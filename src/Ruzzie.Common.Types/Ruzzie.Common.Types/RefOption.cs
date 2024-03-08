@@ -2,11 +2,13 @@
 
 namespace Ruzzie.Common.Types;
 
+[SkipLocalsInit]
 public readonly ref struct RefOption<TValue>
 {
     private readonly OptionVariant _variant = OptionVariant.None;
     private readonly TValue        _value;
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static RefOption<TValue> None()
     {
         return new RefOption<TValue>();
@@ -64,6 +66,30 @@ public readonly ref struct RefOption<TValue>
     public unsafe RefOption<T> Bind<T>(delegate*<TValue, RefOption<T>> binder)
     {
         return _variant == OptionVariant.Some ? binder(_value) : RefOption<T>.None();
+    }
+
+    public RefOption<(TValue, T2)> And<T2>(RefOption<T2> other)
+    {
+        if (_variant == OptionVariant.Some && other._variant == OptionVariant.Some)
+        {
+            return new RefOption<(TValue, T2)>((_value, other._value));
+        }
+        else
+        {
+            return RefOption<(TValue, T2)>.None();
+        }
+    }
+
+    public RefOption<TCombined> And<T2, TCombined>(RefOption<T2> other, Func<TValue, T2, TCombined> map)
+    {
+        if (_variant == OptionVariant.Some && other._variant == OptionVariant.Some)
+        {
+            return new RefOption<TCombined>(map(_value, other._value));
+        }
+        else
+        {
+            return RefOption<TCombined>.None();
+        }
     }
 
     ///<summary>
