@@ -155,14 +155,18 @@ public readonly ref struct Res<TErrKind, TOk>
 
     public unsafe Res<TErrKind, TNewOk> MapOk<TNewOk>(delegate*<TOk, TNewOk> mapOk)
     {
-        return _resultState == ResultState.Success ? mapOk(_ok) : _err;
+        return _resultState == ResultState.Success
+                   ? new Res<TErrKind, TNewOk>(mapOk(_ok))
+                   : new Res<TErrKind, TNewOk>(_err);
     }
 
     public unsafe Res<TNewErrKind, TOk> MapErr<TNewErrKind>(
         delegate*<RefErr<TErrKind>, RefErr<TNewErrKind>> mapError)
         where TNewErrKind : struct, Enum
     {
-        return _resultState == ResultState.Success ? _ok : mapError(_err);
+        return _resultState == ResultState.Success
+                   ? new Res<TNewErrKind, TOk>(_ok)
+                   : new Res<TNewErrKind, TOk>(mapError(_err));
     }
 
     /// bind the ok value
@@ -200,7 +204,7 @@ public readonly ref struct Res<TErrKind, TOk>
             return secondResult._err;
         }
 
-        return (_ok, secondResult._ok);
+        return new Res<TErrKind, (TOk, TU)>((_ok, secondResult._ok));
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
